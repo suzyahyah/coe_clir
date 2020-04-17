@@ -1,9 +1,9 @@
 #!usr/bin/bash
 # Author: Suzanna Sia
 
-sstage=3 # In the style of Kaldi.
-estage=3
-processd=(query) #(analysis query bitext mapping mt1 mt2)
+sstage=0 # In the style of Kaldi.
+estage=1
+processd=(mapping) #(analysis query bitext mapping mt1 mt2)
 
 TEMP_DIR=/home/ssia/projects/coe_clir/temp
 DATA_DIR=/export/corpora5/MATERIAL/IARPA_MATERIAL_BASE-1
@@ -15,9 +15,9 @@ declare -A MT1
 
 # this is correct
 L=(
-#['SWAH']=${DATA_DIR}A
+['SWAH']=${DATA_DIR}A
 ['TAGA']=${DATA_DIR}B
-#['SOMA']=${DATA_DIR}S
+['SOMA']=${DATA_DIR}S
 )
 
 MT1=(
@@ -73,7 +73,7 @@ doc_stats() {
 index_query_doc() {
     printf "\n$1 - STAGE5: Index and Query $2 Trans Docs:\n"
     python src/main.py --lang $1 --mode doc --system $2 --dims 0
-    score=$(./trec_eval/trec_eval -m map temp/IRrels_$1/rels.tsv.dedup \
+    score=$(./trec_eval/trec_eval -m map temp/IRrels_$1/rels.tsv.dedup.trec \
       results/ranking_$1.txt.$2 | awk '{print $3}') || exit 1
     printf "$1\t$2\t00\t$score\n" >> results/all.txt
 }
@@ -231,7 +231,10 @@ for lang in "${!L[@]}"; do
       printf "\tavg num of docs per query: $v3\n"
       printf "\tavg num of query per doc: $v4\n"
 
-      gawk -i inplace '{print $1"\tQ0\t"$2"\t1"}' $TEMP_DIR/IRrels_$lang/rels.tsv.dedup 
+      #gawk -i inplace '{print $1"\tQ0\t"$2"\t1"}' $TEMP_DIR/IRrels_$lang/rels.tsv.dedup 
+      # trec eval format
+      awk '{print $1"\tQ0\t"$2"\t1"}' $TEMP_DIR/IRrels_$lang/rels.tsv.dedup \
+      > $TEMP_DIR/IRrels_$lang.rels.tsv.dedup.trec
     fi
   fi # end of stage 1
 
@@ -251,17 +254,18 @@ for lang in "${!L[@]}"; do
 
   if [ $sstage -le 3 ] && [ $estage -ge 3 ]; then
     printf "\n$lang - STAGE3: train topic model:\n"
-    for k in 10 20 50 100 200 300 400 500; do
-    #for k in 100 200 300 400 500; do
+    #for k in 10 20 50 100 200 300 400 500; do
+    for k in 600 700; do
       bash ./bin/runPolyTM.sh $lang $k
     done
   fi
 
   if [ $sstage -le 4 ] && [ $estage -ge 4 ]; then
     printf "\n$lang - STAGE4: test topic model:\n"
-    for k in 100 200 300 400 500; do
+    #for k in 10 20 50 100 200 300 400 500; do
+    for k in 600 700; do
       python src/main.py --lang $lang --mode tm --dims $k
-      score=$(./trec_eval/trec_eval -m map temp/IRrels_$lang/rels.tsv.dedup \
+      score=$(./trec_eval/trec_eval -m map temp/IRrels_$lang/rels.tsv.dedup.trec \
       results/ranking_$lang.txt.tm | awk '{print $3}')
       printf "$lang\ttopic\t$k\t$score\n" >> results/all.txt
     done

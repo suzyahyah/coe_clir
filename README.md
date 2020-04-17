@@ -18,9 +18,14 @@ see stats.txt, generated from stage 0:1
 
 Process Documents for: Bitext, ANALYSIS, MT1, MT2, Query
 
-Stage 0: Make Directories and Prepare Data
-Stage 1: Calculate Statistics
-Stage 2: Preprocessing for Documents
-Stage 3: Train Polylingual Topic Model on BiText (up to k topics)
-Stage 4: Index Src Topic Vectors, search with Query Topic Vectors (up to k topics) -> trec_eval
-Stage 5: Index {human, mt1, mt2} documents, search with bm25 query -> trec_eval
+* Stage 0: Make Directories and Prepare Data
+
+* Stage 1: Calculate Statistics
+
+* Stage 2: Preprocessing for Documents
+
+* Stage 3: Train Polylingual Topic Model on BiText (up to k topics)
+
+* Stage 4: Index Src Topic Vectors, search with Query Topic Vectors (up to k topics) -> trec_eval
+
+* Stage 5: Index {human, mt1, mt2} documents, search with bm25 query -> trec_eval

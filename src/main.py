@@ -91,8 +91,10 @@ def score_queries(client, queries_json, mode):
             = q['doc_text']
 
         response = client.search(INDEX_NAME, script_query)
+
         if response['hits']['total']['value']==0:
             no_results.append(q['docid'])
+
 
         for r in range(len(response['hits']['hits'])):
             name_id = response['hits']['hits'][r]['_source']['docid']

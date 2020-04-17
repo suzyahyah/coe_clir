@@ -4,6 +4,7 @@
 sstage=1 # In the style of Kaldi.
 estage=1
 processd=(analysis query bitext mt1 mt2 mapping) #(analysis query bitext mapping mt1 mt2)
+#processd=(mapping) #(analysis query bitext mapping mt1 mt2)
 
 TEMP_DIR=/home/ssia/projects/coe_clir/temp
 DATA_DIR=/export/corpora5/MATERIAL/IARPA_MATERIAL_BASE-1
@@ -174,7 +175,7 @@ for lang in "${!L[@]}"; do
 
     # MAPPING
     if [[ "${processd[@]}" =~ "mapping" ]]; then
-
+      rm -r $TEMP_DIR/IRrels_$lang
       mkdir -p $TEMP_DIR/IRrels_$lang
       for i in 1 2 3; do
         sed "1d" ${L[$lang]}/ANALYSIS_ANNOTATION$i/query_annotation.tsv >> $TEMP_DIR/IRrels_$lang/rels.tsv

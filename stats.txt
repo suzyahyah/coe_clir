@@ -6,13 +6,13 @@ TAGA - STAGE1: Calculating Statistics:
 	average no. of words: 2.01615
 
 === build-bitext, eng ===
-	num lines: 51704
-	num docs: 23350
-	avg num lines per doc: 2.2143
-	avg nwords per line for eng: 15.6751 
-	avg nwords per line for src: 15.1523 
-	avg nwords per doc for eng: 34.7094 
-	avg nwords per doc for src: 33.5517 
+	num lines: 30424
+	num docs: 14436
+	avg num lines per doc: 2.10751
+	avg nwords per line for eng: 16.1734 
+	avg nwords per line for src: 15.8715 
+	avg nwords per doc for eng: 34.0856 
+	avg nwords per doc for src: 33.4494 
 
 === ANALYSIS, human_eng ===
 	num lines: 12211
@@ -42,7 +42,7 @@ TAGA - STAGE1: Calculating Statistics:
 	avg nwords per doc for src: 430.149 
 
 === mapping ===
-	original num mappings: 11500, after dedup: 1830
+	original num mappings: 2875, after dedup: 1830
 	num of unique queries: 662
 	num of unique docs: 608
 	avg num of docs per query: 2.76435
@@ -91,7 +91,7 @@ SWAH - STAGE1: Calculating Statistics:
 	avg nwords per doc for src: 387.539 
 
 === mapping ===
-	original num mappings: 12072, after dedup: 1728
+	original num mappings: 3018, after dedup: 1728
 	num of unique queries: 700
 	num of unique docs: 546
 	avg num of docs per query: 2.46857
@@ -140,7 +140,7 @@ SOMA - STAGE1: Calculating Statistics:
 	avg nwords per doc for src: 307.655 
 
 === mapping ===
-	original num mappings: 17144, after dedup: 2573
+	original num mappings: 4286, after dedup: 2573
 	num of unique queries: 847
 	num of unique docs: 575
 	avg num of docs per query: 3.03778

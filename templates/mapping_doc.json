@@ -1,0 +1,13 @@
+{
+  "properties":
+  {
+    "docid": {
+    "type": "text"
+    },
+    "doc_text": {
+      "type": "text",
+      "analyzer": "english",
+      "search_analyzer": "english"
+    }
+  }
+}

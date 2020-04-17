@@ -1,0 +1,16 @@
+{
+  "query":{
+    "function_score":{
+      "query": {
+          "match": {"doc_text": ""}
+       },
+    
+      "script_score": {
+        "script": {
+          "source": "cosineSimilarity(params.query_vector, doc['doctopic']) + 1.0",
+          "params": {"query_vector": [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1], "size":5}
+        }
+      }
+    }
+  } 
+}

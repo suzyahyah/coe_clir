@@ -1,0 +1,17 @@
+{
+  "properties":
+  {
+    "docid": {
+    "type": "text"
+    },
+    "doctopic":{
+      "type": "dense_vector",
+      "dims": 10
+    },
+    "doc_text": {
+      "type": "text",
+      "analyzer": "english",
+      "search_analyzer": "english"
+    }
+  }
+}

@@ -42,11 +42,11 @@ TAGA - STAGE1: Calculating Statistics:
 	avg nwords per doc for src: 430.149 
 
 === mapping ===
-	original num mappings: 5750, after dedup: 1830
+	original num mappings: 11500, after dedup: 1830
 	num of unique queries: 662
-	num of unique docs: 1
+	num of unique docs: 608
 	avg num of docs per query: 2.76435
-	avg num of query per doc: 1830
+	avg num of query per doc: 3.00987
 
 SWAH - STAGE1: Calculating Statistics:
 
@@ -91,11 +91,11 @@ SWAH - STAGE1: Calculating Statistics:
 	avg nwords per doc for src: 387.539 
 
 === mapping ===
-	original num mappings: 6036, after dedup: 1728
+	original num mappings: 12072, after dedup: 1728
 	num of unique queries: 700
-	num of unique docs: 1
+	num of unique docs: 546
 	avg num of docs per query: 2.46857
-	avg num of query per doc: 1728
+	avg num of query per doc: 3.16484
 
 SOMA - STAGE1: Calculating Statistics:
 
@@ -140,8 +140,8 @@ SOMA - STAGE1: Calculating Statistics:
 	avg nwords per doc for src: 307.655 
 
 === mapping ===
-	original num mappings: 8572, after dedup: 2573
+	original num mappings: 17144, after dedup: 2573
 	num of unique queries: 847
-	num of unique docs: 1
+	num of unique docs: 575
 	avg num of docs per query: 3.03778
-	avg num of query per doc: 2573
+	avg num of query per doc: 4.47478

@@ -1,129 +1,147 @@
 
 TAGA - STAGE1: Calculating Statistics:
+
 === Queries === 
 	no. of unique TAGA queryIDs: 1300, unique text: 1283 
 	average no. of words: 2.01615
+
 === build-bitext, eng ===
 	num lines: 51704
 	num docs: 23350
-	avg num lines per doc: 51704/23350 
+	avg num lines per doc: 2.2143
 	avg nwords per line for eng: 15.6751 
 	avg nwords per line for src: 15.1523 
 	avg nwords per doc for eng: 34.7094 
 	avg nwords per doc for src: 33.5517 
+
 === ANALYSIS, human_eng ===
 	num lines: 12211
 	num docs: 529
-	avg num lines per doc: 12211/529 
+	avg num lines per doc: 23.0832
 	avg nwords per line for eng: 18.9006 
 	avg nwords per line for src: 18.6348 
 	avg nwords per doc for eng: 436.285 
 	avg nwords per doc for src: 430.149 
+
 === ANALYSIS, mt1_eng ===
 	num lines: 7344
 	num docs: 529
-	avg num lines per doc: 7344/529 
+	avg num lines per doc: 13.8828
 	avg nwords per line for eng: 36.2059 
 	avg nwords per line for src: 30.9843 
 	avg nwords per doc for eng: 502.639 
 	avg nwords per doc for src: 430.149 
+
 === ANALYSIS, mt2_eng ===
 	num lines: 12211
 	num docs: 529
-	avg num lines per doc: 12211/529 
+	avg num lines per doc: 23.0832
 	avg nwords per line for eng: 18.4441 
 	avg nwords per line for src: 18.6348 
 	avg nwords per doc for eng: 425.749 
 	avg nwords per doc for src: 430.149 
+
 === mapping ===
-	original num mappings: 2875, after dedup: 1830
+	original num mappings: 5750, after dedup: 1830
 	num of unique queries: 662
-	num of unique docs: 608
+	num of unique docs: 1
 	avg num of docs per query: 2.76435
-	avg num of query per doc: 3.00987
+	avg num of query per doc: 1830
 
 SWAH - STAGE1: Calculating Statistics:
+
 === Queries === 
 	no. of unique SWAH queryIDs: 1300, unique text: 1289 
 	average no. of words: 1.84154
+
 === build-bitext, eng ===
 	num lines: 24900
 	num docs: 18920
-	avg num lines per doc: 24900/18920 
+	avg num lines per doc: 1.31607
 	avg nwords per line for eng: 32.4478 
 	avg nwords per line for src: 28.8724 
 	avg nwords per doc for eng: 42.7034 
 	avg nwords per doc for src: 37.9981 
+
 === ANALYSIS, human_eng ===
 	num lines: 10100
 	num docs: 547
-	avg num lines per doc: 10100/547 
+	avg num lines per doc: 18.4644
 	avg nwords per line for eng: 24.9451 
 	avg nwords per line for src: 20.9885 
 	avg nwords per doc for eng: 460.596 
 	avg nwords per doc for src: 387.539 
+
 === ANALYSIS, mt1_eng ===
 	num lines: 7671
 	num docs: 547
-	avg num lines per doc: 7671/547 
+	avg num lines per doc: 14.0238
 	avg nwords per line for eng: 35.3741 
 	avg nwords per line for src: 27.6345 
 	avg nwords per doc for eng: 496.079 
 	avg nwords per doc for src: 387.539 
+
 === ANALYSIS, mt2_eng ===
 	num lines: 10100
 	num docs: 547
-	avg num lines per doc: 10100/547 
+	avg num lines per doc: 18.4644
 	avg nwords per line for eng: 25.1353 
 	avg nwords per line for src: 20.9885 
 	avg nwords per doc for eng: 464.108 
 	avg nwords per doc for src: 387.539 
+
 === mapping ===
-	original num mappings: 3018, after dedup: 1728
+	original num mappings: 6036, after dedup: 1728
 	num of unique queries: 700
-	num of unique docs: 546
+	num of unique docs: 1
 	avg num of docs per query: 2.46857
-	avg num of query per doc: 3.16484
+	avg num of query per doc: 1728
 
 SOMA - STAGE1: Calculating Statistics:
+
 === Queries === 
 	no. of unique SOMA queryIDs: 1300, unique text: 1287 
 	average no. of words: 1.65385
+
 === build-bitext, eng ===
 	num lines: 24844
 	num docs: 20268
-	avg num lines per doc: 24844/20268 
+	avg num lines per doc: 1.22577
 	avg nwords per line for eng: 30.5426 
 	avg nwords per line for src: 29.6017 
 	avg nwords per doc for eng: 37.4383 
 	avg nwords per doc for src: 36.285 
+
 === ANALYSIS, human_eng ===
 	num lines: 6690
 	num docs: 559
-	avg num lines per doc: 6690/559 
+	avg num lines per doc: 11.9678
 	avg nwords per line for eng: 25.8043 
 	avg nwords per line for src: 25.7069 
 	avg nwords per doc for eng: 308.821 
 	avg nwords per doc for src: 307.655 
+
 === ANALYSIS, mt1_eng ===
 	num lines: 5691
 	num docs: 559
-	avg num lines per doc: 5691/559 
+	avg num lines per doc: 10.1807
 	avg nwords per line for eng: 35.0873 
 	avg nwords per line for src: 30.2195 
 	avg nwords per doc for eng: 357.213 
 	avg nwords per doc for src: 307.655 
+
 === ANALYSIS, mt2_eng ===
 	num lines: 6690
 	num docs: 559
-	avg num lines per doc: 6690/559 
+	avg num lines per doc: 11.9678
 	avg nwords per line for eng: 26.6695 
 	avg nwords per line for src: 25.7069 
 	avg nwords per doc for eng: 319.175 
 	avg nwords per doc for src: 307.655 
+
 === mapping ===
-	original num mappings: 4286, after dedup: 2573
+	original num mappings: 8572, after dedup: 2573
 	num of unique queries: 847
-	num of unique docs: 575
+	num of unique docs: 1
 	avg num of docs per query: 3.03778
-	avg num of query per doc: 4.47478
+	avg num of query per doc: 2573

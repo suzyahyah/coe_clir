@@ -1,9 +1,9 @@
 #!usr/bin/bash
 # Author: Suzanna Sia
 
-sstage=0 # In the style of Kaldi.
+sstage=1 # In the style of Kaldi.
 estage=1
-processd=(mapping) #(analysis query bitext mapping mt1 mt2)
+processd=(analysis query bitext mapping mt1 mt2) #(analysis query bitext mapping mt1 mt2)
 
 TEMP_DIR=/home/ssia/projects/coe_clir/temp
 DATA_DIR=/export/corpora5/MATERIAL/IARPA_MATERIAL_BASE-1
@@ -48,7 +48,7 @@ EOF
 }
 
 doc_stats() {
-    printf "=== $1, $2 ===\n"
+    printf "\n=== $1, $2 ===\n"
     
     eng_nw=$(cat $TEMP_DIR/DOCS_$lang/$1/$2/* | wc -w)
     src_nw=$(cat $TEMP_DIR/DOCS_$lang/$1/src/* | wc -w)
@@ -59,10 +59,11 @@ doc_stats() {
     src_avg_nw_doc=$(awk "BEGIN{print $src_nw/$ndocs}")
     eng_avg_nw_lin=$(awk "BEGIN{print $eng_nw/$nlines}")
     src_avg_nw_lin=$(awk "BEGIN{print $src_nw/$nlines}")
+    avg_nlines=$(awk "BEGIN{print $nlines/$ndocs}")
 
     printf "\tnum lines: $nlines\n" 
     printf "\tnum docs: $ndocs\n"
-    printf "\tavg num lines per doc: $nlines/$ndocs \n"
+    printf "\tavg num lines per doc: $avg_nlines\n"
     printf "\tavg nwords per line for eng: $eng_avg_nw_lin \n"
     printf "\tavg nwords per line for src: $src_avg_nw_lin \n"
 
@@ -193,7 +194,7 @@ for lang in "${!L[@]}"; do
       ntotalqtext=$(cat $TEMP_DIR/QUERY_$lang/q.txt.qp | awk -F'\t' '{print $2}' | sort -u | wc -l)
       avgwords_q=$(cat $TEMP_DIR/QUERY_$lang/q.txt.qp | awk -F'\t' '{print $2}' | wc | awk '{print $2/$1}')
 
-      printf "=== Queries === \n"
+      printf "\n=== Queries === \n"
       printf "\tno. of unique $lang queryIDs: $ntotalq, unique text: $ntotalqtext \n"
       printf "\taverage no. of words: $avgwords_q\n"
     fi
@@ -214,7 +215,7 @@ for lang in "${!L[@]}"; do
     ##### Handling mapping 
 
     if [[ "${processd[@]}" =~ "mapping" ]]; then
-      printf "=== mapping ===\n"
+      printf "\n=== mapping ===\n"
       v1=$(wc -l $TEMP_DIR/IRrels_$lang/rels.tsv | awk '{print $1}')
       v2=$(wc -l $TEMP_DIR/IRrels_$lang/rels.tsv.dedup | awk '{print $1}')  
       printf "\toriginal num mappings: $v1, after dedup: $v2\n"

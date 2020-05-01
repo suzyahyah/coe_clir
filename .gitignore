@@ -4,4 +4,4 @@ data/*
 src/*.swp
 bin/*.swp
 elasticsearch-7.5.0/*
-trec_eval
+.ipynb_checkpoints/*

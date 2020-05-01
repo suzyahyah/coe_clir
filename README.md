@@ -29,3 +29,6 @@ Process Documents for: Bitext, ANALYSIS, MT1, MT2, Query
 * Stage 4: Index Src Topic Vectors, search with Query Topic Vectors (up to k topics) -> trec_eval
 
 * Stage 5: Index {human, mt1, mt2} documents, search with bm25 query -> trec_eval
+
+#### Running Query-Topic Diagnostics:
+`bash ./bin/run_diagnostics.sh`

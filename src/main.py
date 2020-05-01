@@ -3,6 +3,7 @@
 
 ### Standard imports
 import pdb
+import numpy as np
 import os
 import sys
 import json
@@ -19,6 +20,7 @@ argparser.add_argument('--lang', type=str, required=True)
 argparser.add_argument('--mode', type=str, required=True)
 argparser.add_argument('--system', type=str, required=False)
 argparser.add_argument('--dims', type=int, default=0)
+argparser.add_argument('--baseline', type=int, default=0, required=False)
 args = argparser.parse_args()
 
 INDEX_NAME="coe"
@@ -33,7 +35,7 @@ def init():
     client = setup_es(client, INDEX_NAME, mode, dims)
 
     # Topics
-    if mode == "tm":
+    if "tm" in mode:
         system = "tm"
         mdir = "/home/ssia/projects/coe_clir/malletfiles"
 
@@ -43,10 +45,20 @@ def init():
         target_json = utils.topics_to_json(target_topics_fn)
         queries_json = utils.topics_to_json(query_topics_fn, query=True)
 
+        if args.baseline == 1:
+            print(">Running random baseline")
+            for json in target_json:
+                randomvals = np.random.random(dims).tolist()
+                json['doctopic'] = randomvals
+
+            for json in queries_json:
+                randomvals = np.random.random(dims).tolist()
+                json['doctopic'] = randomvals
+            
     # Text
     elif mode == "doc":
         print("documents...")
-        datadir = "/home/ssia/projects/coe_clir/temp"
+        datadir = "/home/ssia/projects/coe_clir/data"
 
         target_doc_fol = os.path.join(datadir, f"DOCS_{args.lang}/ANALYSIS/{system}_eng_proc_doc")
         query_doc_fn = os.path.join(datadir, f"QUERY_{args.lang}/q.txt.qp")
@@ -101,6 +113,14 @@ def score_queries(client, queries_json, mode):
             score = response['hits']['hits'][r]['_score']
             res = f"{q['docid']}\tQO\t{name_id}\t{r}\t{score}\tSTANDARD"
             scores.append(res)
+
+    for i, qid in enumerate(no_results):
+        # need to give a different i, otherwise trec_eval will complain
+        res = f"{qid}\tQ0\tdoc{i}\t0\t0\tSTANDARD"
+        scores.append(res)
+
+    print("No. of queries with no result:", len(no_results))
+
     return scores
 
 def setup_es(client, INDEX_NAME, mode, dims=0):

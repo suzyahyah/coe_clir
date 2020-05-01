@@ -8,7 +8,8 @@ import numpy as np
 import math
 import os, sys
 import re
-
+import shutil
+import pdb
 # argparser
 import argparse
 from sklearn.datasets import fetch_20newsgroups 
@@ -59,6 +60,10 @@ class Pipeline():
 def proc_and_save(dir, stopwords=False, mode=""):
     files = os.listdir(dir)
     new_dir = dir+"_proc_"+mode
+    
+    if os.path.exists(new_dir):
+        shutil.rmtree(new_dir)
+
     if not os.path.exists(new_dir):
         os.mkdir(new_dir)
 
@@ -82,22 +87,21 @@ if __name__=="__main__":
     pipe = Pipeline()
 
 
-
     print(f"Preprocessing for : {args.lang}, {args.mode}")
 
     if args.mode == "tm":
-        dir1 = f'temp/DOCS_{args.lang}/build-bitext/eng'
-        dir2 = f'temp/DOCS_{args.lang}/build-bitext/src'
-        dir3 = f'temp/DOCS_{args.lang}/ANALYSIS/src'
+        dir1 = f'data/DOCS_{args.lang}/build-bitext/eng'
+        dir2 = f'data/DOCS_{args.lang}/build-bitext/src'
+        dir3 = f'data/DOCS_{args.lang}/ANALYSIS/src'
 
         pipe.load_stopwords(f'assets/stopwords_en.txt')
-        #proc_and_save(dir1, stopwords=True, mode=args.mode)
+        proc_and_save(dir1, stopwords=True, mode=args.mode)
 
         pipe.load_stopwords(f'assets/stopwords_{args.lang}.txt')
-        #proc_and_save(dir2, stopwords=True, mode=args.mode)
-        #proc_and_save(dir3, stopwords=True, mode=args.mode)
+        proc_and_save(dir2, stopwords=True, mode=args.mode)
+        proc_and_save(dir3, stopwords=True, mode=args.mode)
 
-        with open(f'temp/QUERY_{args.lang}/q.txt.qp', 'r') as f:
+        with open(f'data/QUERY_{args.lang}/q.txt.qp', 'r') as f:
             queries = f.readlines()
 
         queries = [q.strip().lower().split() for q in queries]
@@ -108,15 +112,15 @@ if __name__=="__main__":
         # is interpreted as a sequence of word tokens.
 
         queries = [q[0]+" Q0 "+" ".join(q[1:]) for q in queries]
-        with open(f'temp/QUERY_{args.lang}/q.txt.qp.tm', 'w') as f:
+        with open(f'data/QUERY_{args.lang}/q.txt.qp.tm', 'w') as f:
             f.write("\n".join(queries)+"\n")
 
 
     if "doc" in args.mode:
         mode, system = args.mode.split('_')
 
-        dir1 = f'temp/DOCS_{args.lang}/ANALYSIS/src'
-        dir2 = f'temp/DOCS_{args.lang}/ANALYSIS/{system}_eng'
+        dir1 = f'data/DOCS_{args.lang}/ANALYSIS/src'
+        dir2 = f'data/DOCS_{args.lang}/ANALYSIS/{system}_eng'
 
         proc_and_save(dir1, stopwords=False, mode=mode)
         proc_and_save(dir2, stopwords=False, mode=mode)

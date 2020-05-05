@@ -1,11 +1,20 @@
 #!usr/bin/bash
 # Author: Suzanna Sia
 
-sstage=6 # In the style of Kaldi.
-estage=6
+# document types to process for stage0 to stage6.
+processd=(query mapping analysis bitext mt1 mt2) 
 baseline=0
-processd=(bitext query mapping mt1 mt2 analysis) #(analysis query bitext mt1 mt2 mapping) #(analysis query bitext mapping mt1 mt2)
-#processd=(mapping) #(analysis query bitext mapping mt1 mt2)
+
+# start stage and end stage (inclusive)
+sstage=1 
+estage=1
+
+# Stage0: Get Data
+# Stage1: Data statistics
+# Stage2: Data Preprocessing
+# Stage3: Polylingual Topic Modeling
+# Stage5: Index and Query Elastic search
+# Stage6: Combine trained models
 
 TEMP_DIR=/home/ssia/projects/coe_clir/data
 DATA_DIR=/export/corpora5/MATERIAL/IARPA_MATERIAL_BASE-1
@@ -295,9 +304,9 @@ for lang in "${!L[@]}"; do
     printf "\n$lang - STAGE2: Preprocessing:\n"
     python src/preprocess.py --lang "$lang" --mode "tm"
 
-    #[[ "${processd[@]}" =~ "analysis" ]] && python src/preprocess.py --lang "$lang" --mode "doc_human";
-    #[[ "${processd[@]}" =~ "mt1" ]] && python src/preprocess.py --lang "$lang" --mode "doc_mt1";
-    #[[ "${processd[@]}" =~ "mt2" ]] && python src/preprocess.py --lang "$lang" --mode "doc_mt2";
+    [[ "${processd[@]}" =~ "analysis" ]] && python src/preprocess.py --lang "$lang" --mode "doc_human";
+    [[ "${processd[@]}" =~ "mt1" ]] && python src/preprocess.py --lang "$lang" --mode "doc_mt1";
+    [[ "${processd[@]}" =~ "mt2" ]] && python src/preprocess.py --lang "$lang" --mode "doc_mt2";
 
   fi
 

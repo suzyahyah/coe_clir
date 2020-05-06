@@ -29,7 +29,7 @@ from collections import defaultdict
 from bs4 import BeautifulSoup as bs
 
 
-def parse_write_sgml(sgml_file, txt_dir, rel_file):
+def parse_write_sgml(sgml_file, txt_dir, rel_fn):
     """Method used to parse sgml files
 
     Args:
@@ -40,12 +40,11 @@ def parse_write_sgml(sgml_file, txt_dir, rel_file):
 
     """
   
-    rel_docs = rel_file
-    with open(rel_file, 'r') as f:
+    with open(rel_fn, 'r') as f:
         rels = f.readlines()
     
-    rel_files= [d.split()[2] for d in data if d.split()[3]==str(1)]
-    print("num rel files:", len(rel_files))
+    rel_files= [d.split()[2] for d in rels]
+    print("num rel files:", len(rel_files), rel_fn)
 
 
     docd = {}
@@ -106,6 +105,6 @@ if __name__=="__main__":
 
     fil = sys.argv[1]
     txt_dir = sys.argv[2]
-    rel_file = sys.argv[3]
+    rel_fn = sys.argv[3]
 
-    parse_write_sgml(fil, txt_dir, rel_file)
+    parse_write_sgml(fil, txt_dir, rel_fn)

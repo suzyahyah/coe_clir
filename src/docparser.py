@@ -66,9 +66,9 @@ def parse_write_sgml(sgml_file, txt_dir, rel_fn):
     
     fmt = {}
     fmt['doc'] = 'doc'
-    fmt['docid'] = 'docid'
+    fmt['docno'] = 'docno'
     fmt['text'] = 'text'
-    fmt['stripdocid'] = "<docid>|</docid>"
+    fmt['stripdocno'] = "<docno>|</docno>"
     fmt['striptext'] = "<text>|</text>"
 
     if upperCase:
@@ -76,30 +76,31 @@ def parse_write_sgml(sgml_file, txt_dir, rel_fn):
             fmt[k] = fmt[k].upper()
 
     for doc in soup.find_all(fmt['doc']):
-        docids = doc.find_all(fmt['docid'])
+        docnos = doc.find_all(fmt['docno'])
 
-        assert len(docids)==1
-        docid = re.sub(fmt['stripdocid'], "", str(docids[0]))
+        assert len(docnos)==1
+        docno = re.sub(fmt['stripdocno'], "", str(docnos[0])).strip()
 
-        if docid not in rel_files:
+        if docno not in rel_files:
             continue
 
-        docd[docid] = []
+        docd[docno] = []
         texts = doc.find_all(fmt['text'])
         for text in texts:
             text = re.sub(fmt['striptext'], "", str(text))
             text = " ".join(text.split())
-            docd[docid].append(text.strip())
+            docd[docno].append(text.strip())
 
-        docd[docid] = "\n".join(docd[docid])
+        docd[docno] = "\n".join(docd[docno])
 
-    for docid in docd.keys():
-        write_file = os.path.join(txt_dir, docid) + ".txt"
-        with open(write_file, 'w', encoding='utf-8') as f:
-            f.write(docd[docid])
-    #DB.dp(xcl=['soup', 'doc'])
-        
-    print(f"wrote {len(docd.keys())} files to folder {txt_dir}")
+    if len(docd.keys())>0:
+        for docno in docd.keys():
+            write_file = os.path.join(txt_dir, docno) + ".txt"
+            with open(write_file, 'w', encoding='utf-8') as f:
+                f.write(docd[docno])
+        #DB.dp(xcl=['soup', 'doc'])
+            
+        print(f"wrote {len(docd.keys())} files to folder {txt_dir}")
 
 if __name__=="__main__":
 

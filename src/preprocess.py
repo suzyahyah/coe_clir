@@ -59,14 +59,8 @@ class Pipeline():
 
 def proc_and_save(dir, stopwords=False, mode=""):
     files = os.listdir(dir)
-    new_dir = dir+"_proc_"+mode
+    new_dir = dir+"_"+mode
     
-    if os.path.exists(new_dir):
-        shutil.rmtree(new_dir)
-
-    if not os.path.exists(new_dir):
-        os.mkdir(new_dir)
-
     for fil in files:
         with open(os.path.join(dir, fil), 'r') as f:
             data = f.readlines()
@@ -80,47 +74,51 @@ def proc_and_save(dir, stopwords=False, mode=""):
 
 if __name__=="__main__":
     argparser = argparse.ArgumentParser()
-    argparser.add_argument('--lang', type=str, required=True, choices=['SOMA','TAGA','SWAH'])
-    argparser.add_argument('--mode', type=str, required=True, choices=['doc_human', 'doc_mt1',
-        'tm', 'doc_mt2'])
+    argparser.add_argument('--sw', type=str, required=False)
+    argparser.add_argument('--mode', type=str, required=True)
+    argparser.add_argument('--docdir', type=str, default=None, required=False)
+    argparser.add_argument('--fn', type=str, default=None, required=False)
+
     args = argparser.parse_args()
     pipe = Pipeline()
 
 
-    print(f"Preprocessing for : {args.lang}, {args.mode}")
+    print(f"Preprocessing for : {args.fn} {args.docdir}, {args.mode}")
 
     if args.mode == "tm":
-        dir1 = f'data/DOCS_{args.lang}/build-bitext/eng'
-        dir2 = f'data/DOCS_{args.lang}/build-bitext/src'
-        dir3 = f'data/DOCS_{args.lang}/ANALYSIS/src'
 
-        pipe.load_stopwords(f'assets/stopwords_en.txt')
-        proc_and_save(dir1, stopwords=True, mode=args.mode)
+   #     dir1 = f'data/DOCS_{args.lang}/build-bitext/eng'
+   #     dir2 = f'data/DOCS_{args.lang}/build-bitext/src'
+   #     dir3 = f'data/DOCS_{args.lang}/ANALYSIS/src'
 
-        pipe.load_stopwords(f'assets/stopwords_{args.lang}.txt')
-        proc_and_save(dir2, stopwords=True, mode=args.mode)
-        proc_and_save(dir3, stopwords=True, mode=args.mode)
+        if args.docdir:
+            pipe.load_stopwords(args.sw)
+            proc_and_save(args.docdir, stopwords=True, mode=args.mode)
 
-        with open(f'data/QUERY_{args.lang}/q.txt.qp', 'r') as f:
-            queries = f.readlines()
+        #pipe.load_stopwords(f'assets/stopwords_{args.lang}.txt')
+        #proc_and_save(dir2, stopwords=True, mode=args.mode)
+        #proc_and_save(dir3, stopwords=True, mode=args.mode)
 
-        queries = [q.strip().lower().split() for q in queries]
-        # format for mallet ssngle file input
+        if args.fn:
+            
+            with open(args.fn, 'r') as f:
+                queries = f.readlines()
+            queries = [q.strip().lower().split() for q in queries]
+            # format for mallet ssngle file input
 
-        # the first token of each line (whitespace delimited, with optional comma) becomes the
-        # instance name, the second token becomes the label, and all additional text on the line
-        # is interpreted as a sequence of word tokens.
-
-        queries = [q[0]+" Q0 "+" ".join(q[1:]) for q in queries]
-        with open(f'data/QUERY_{args.lang}/q.txt.qp.tm', 'w') as f:
-            f.write("\n".join(queries)+"\n")
+            # the first token of each line (whitespace delimited, with optional comma) becomes the
+            # instance name, the second token becomes the label, and all additional text on the line
+            # is interpreted as a sequence of word tokens.
+            queries = [q[0]+" Q0 "+" ".join(q[1:]) for q in queries]
+            with open(args.fn+".tm", 'w') as f:
+                f.write("\n".join(queries)+"\n")
 
 
     if "doc" in args.mode:
-        mode, system = args.mode.split('_')
+        #mode, system = args.mode.split('_')
+        proc_and_save(args.docdir, stopwords=False, mode=args.mode)
+        #dir1 = f'data/DOCS_{args.lang}/ANALYSIS/src'
+        #dir1 = f'data/DOCS_{args.lang}/ANALYSIS/{system}_eng'
 
-        dir1 = f'data/DOCS_{args.lang}/ANALYSIS/src'
-        dir2 = f'data/DOCS_{args.lang}/ANALYSIS/{system}_eng'
-
-        proc_and_save(dir1, stopwords=False, mode=mode)
-        proc_and_save(dir2, stopwords=False, mode=mode)
+        #proc_and_save(dir1, stopwords=False, mode=mode)
+        #proc_and_save(dir2, stopwords=False, mode=mode)

@@ -17,8 +17,8 @@ import re
 ### Local/Custom imports
 
 # Comment out debugger before deployment
-#from debugger import Debugger
-#DB = Debugger()
+from debugger import Debugger
+DB = Debugger()
 
 #from distutils.util import str2bool
 #argparser = argparser.ArgumentParser()
@@ -27,6 +27,43 @@ import re
 from os import path
 from collections import defaultdict
 from bs4 import BeautifulSoup as bs
+
+
+
+def extract_queries(sgml_file, query_dir, year="00"):
+    
+    with open(sgml_file) as f:
+        soup = bs(f.read(), 'html.parser')
+
+    tags = set([tag.name for tag in soup.find_all()])
+    tags.remove('num')
+    tags.remove('top')
+
+    queries = soup.find_all('top')
+    queries_all = []
+    for q in queries:
+        qid = q.find('num').contents[0].strip()
+        qid = qid.replace('C','query')
+
+        if year=="00":
+            qtext = q.find_all('num')[0].contents[1].get_text()
+
+        else:
+            qtext = []
+            for tag in tags:
+                if q.find(tag) is not None:
+                    qtext.append(q.find(tag).contents[0])
+
+            qtext = " ".join(qtext)
+        qtext = " ".join(qtext.split()) #strip out extra lines
+        queries_all.append(qid+"\t"+qtext)
+
+    print(f"{len(queries_all)} queries written to {query_dir}")
+
+    queries_all = "\n".join(queries_all)
+    with open(os.path.join(query_dir, f'query{year}.txt'), 'w') as f:
+        f.write(queries_all + "\n")
+    
 
 
 def parse_write_sgml(sgml_file, txt_dir, rel_fn):
@@ -43,14 +80,14 @@ def parse_write_sgml(sgml_file, txt_dir, rel_fn):
     with open(rel_fn, 'r') as f:
         rels = f.readlines()
     
-    rel_files= [d.split()[2] for d in rels]
+    rel_files= [d.split()[1] for d in rels]
     print("num rel files:", len(rel_files), rel_fn)
 
 
     docd = {}
     with open(sgml_file) as f:
         soup = bs(f.read(), 'html.parser')
-    
+
 
     cap = soup.find_all('DOC')
     nocap = soup.find_all('doc')
@@ -104,8 +141,17 @@ def parse_write_sgml(sgml_file, txt_dir, rel_fn):
 
 if __name__=="__main__":
 
-    fil = sys.argv[1]
-    txt_dir = sys.argv[2]
-    rel_fn = sys.argv[3]
+    mode = sys.argv[1]
+    fil = sys.argv[2]
+    txt_dir = sys.argv[3]
 
-    parse_write_sgml(fil, txt_dir, rel_fn)
+    if mode == "doc":
+        rel_fn = sys.argv[4]
+        parse_write_sgml(fil, txt_dir, rel_fn)
+
+    elif mode == "query":
+        year = str(sys.argv[4])
+        extract_queries(fil, txt_dir, year)
+
+
+

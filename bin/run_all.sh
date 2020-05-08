@@ -2,6 +2,7 @@
 # Author: Suzanna Sia
 
 # document types to process for stage0 to stage6.
+source ./bin/utils.sh
 processd=(query mapping analysis bitext mt1 mt2) 
 baseline=0
 
@@ -37,10 +38,6 @@ MT1=(
 ['SOMA']=${DATA_DIR2}S
 )
 
-rm_mk(){
-  [ -d $1 ] && rm -r $1
-  mkdir -p $1
-}
 
 
 train_test_split() {
@@ -248,13 +245,7 @@ for lang in "${!L[@]}"; do
 
     ### Queries
     if [[ "${processd[@]}" =~ "query" ]]; then
-      ntotalq=$(cat $TEMP_DIR/QUERY_$lang/q.txt.qp | sort -u | wc -l)
-      ntotalqtext=$(cat $TEMP_DIR/QUERY_$lang/q.txt.qp | awk -F'\t' '{print $2}' | sort -u | wc -l)
-      avgwords_q=$(cat $TEMP_DIR/QUERY_$lang/q.txt.qp | awk -F'\t' '{print $2}' | wc | awk '{print $2/$1}')
-
-      printf "\n=== Queries === \n"
-      printf "\tno. of unique $lang queryIDs: $ntotalq, unique text: $ntotalqtext \n"
-      printf "\taverage no. of words: $avgwords_q\n"
+      print_query $TEMP_DIR/QUERY_$lang/q.txt.qp
     fi
 
     ### BiText
@@ -273,33 +264,17 @@ for lang in "${!L[@]}"; do
     ##### Handling mapping 
 
     if [[ "${processd[@]}" =~ "mapping" ]]; then
-      printf "\n=== mapping ===\n"
-      v1=$(wc -l $TEMP_DIR/IRrels_$lang/rels.tsv | awk '{print $1}')
-      v2=$(wc -l $TEMP_DIR/IRrels_$lang/rels.tsv.dedup | awk '{print $1}')  
-      printf "\toriginal num mappings: $v1, after dedup: $v2\n"
-
-      numq=$(awk '{print $1}' $TEMP_DIR/IRrels_$lang/rels.tsv.dedup | sort -u | wc -l)
-      numd=$(awk '{print $2}' $TEMP_DIR/IRrels_$lang/rels.tsv.dedup | sort -u | wc -l)
-
-      v3=$(awk "BEGIN{print $v2/$numq}")
-      v4=$(awk "BEGIN{print $v2/$numd}")
-
-      printf "\tnum of unique queries: $numq\n"
-      printf "\tnum of unique docs: $numd\n"
-
-      printf "\tavg num of docs per query: $v3\n"
-      printf "\tavg num of query per doc: $v4\n"
-
-      #gawk -i inplace '{print $1"\tQ0\t"$2"\t1"}' $TEMP_DIR/IRrels_$lang/rels.tsv.dedup 
-      # trec eval format
-      awk '{print $1"\tQ0\t"$2"\t1"}' $TEMP_DIR/IRrels_$lang/rels.tsv.dedup \
-      > $TEMP_DIR/IRrels_$lang/rels.tsv.dedup.trec
+      relsf=$TEMP_DIR/IRrels_$lang/rels.tsv.dedup
+      print_mapping $relsf
+      awk '{print $1"\tQ0\t"$2"\t1"}' $relsf > $relsf.trec
     fi
   fi # end of stage 1
 
   if [ $sstage -le 2 ] && [ $estage -ge 2 ]; then
-    # We usually do stopword removal for Topic Modeling (bitext), for MT outputs BM25 TF-IDF weights the
-    # tokens and hence we should not do stopword removal. However for BM25 docs we want to do digit
+    # We usually do stopword removal for Topic Modeling (bitext), 
+    # for MT outputs BM25 TF-IDF weights the
+    # tokens and hence we should not do stopword removal. 
+    # However for BM25 docs we want to do digit
     # and punctuation removal, and lowercase for preprocessing. 
     printf "\n$lang - STAGE2: Preprocessing:\n"
     python src/preprocess.py --lang "$lang" --mode "tm"
@@ -307,7 +282,6 @@ for lang in "${!L[@]}"; do
     [[ "${processd[@]}" =~ "analysis" ]] && python src/preprocess.py --lang "$lang" --mode "doc_human";
     [[ "${processd[@]}" =~ "mt1" ]] && python src/preprocess.py --lang "$lang" --mode "doc_mt1";
     [[ "${processd[@]}" =~ "mt2" ]] && python src/preprocess.py --lang "$lang" --mode "doc_mt2";
-
   fi
 
   if [ $sstage -le 3 ] && [ $estage -ge 3 ]; then

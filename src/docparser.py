@@ -41,32 +41,50 @@ def extract_queries(sgml_file, query_dir, year="00"):
 
     queries = soup.find_all('top')
     queries_all = []
-    for q in queries:
-        qid = q.find('num').contents[0].strip()
+    queries_title = []
+
+    for qry in queries:
+        qid = qry.find('num').contents[0].strip()
         qid = qid.replace('C','query')
 
         if year=="00":
-            qtext = q.find_all('num')[0].contents[1].get_text()
+            qtext = qry.find_all('num')[0].contents[1]
+            title = qtext.contents[0].strip()
+            alltext = qtext.get_text()
 
         else:
-            qtext = []
-            for tag in tags:
-                if q.find(tag) is not None:
-                    qtext.append(q.find(tag).contents[0])
+            alltext = []
+            title = ""
 
-            qtext = " ".join(qtext)
-        qtext = " ".join(qtext.split()) #strip out extra lines
-        queries_all.append(qid+"\t"+qtext)
+            for tag in tags:
+                if qry.find(tag) is not None:
+                    alltext.append(qry.find(tag).contents[0])
+
+                    if "title" in tag:
+                        title = qry.find(tag).contents[0].strip()
+
+            alltext = " ".join(alltext)
+
+        alltext = " ".join(alltext.split()) #strip out extra lines
+
+        assert len(title)!=0 and len(alltext)!=0
+
+        queries_all.append(qid+"\t"+alltext)
+        queries_title.append(qid+"\t"+title)
 
     print(f"{len(queries_all)} queries written to {query_dir}")
 
     queries_all = "\n".join(queries_all)
-    with open(os.path.join(query_dir, f'query{year}.txt'), 'w') as f:
+    with open(os.path.join(query_dir, f'query{year}_all.txt'), 'w') as f:
         f.write(queries_all + "\n")
     
+    queries_title = "\n".join(queries_title)
+    with open(os.path.join(query_dir, f'query{year}_title.txt'), 'w') as f:
+        f.write(queries_title + "\n")
+ 
 
 
-def parse_write_sgml(sgml_file, txt_dir, rel_fn):
+def parse_write_sgml(sgml_file, txt_dir):
     """Method used to parse sgml files
 
     Args:
@@ -76,14 +94,9 @@ def parse_write_sgml(sgml_file, txt_dir, rel_fn):
         Exception: if unable to read tsv file
 
     """
-  
-    with open(rel_fn, 'r') as f:
-        rels = f.readlines()
+    #with open(rel_fn, 'r') as f:
+    #    rels = f.readlines()
     
-    rel_files= [d.split()[1] for d in rels]
-    print("num rel files:", len(rel_files), rel_fn)
-
-
     docd = {}
     with open(sgml_file) as f:
         soup = bs(f.read(), 'html.parser')
@@ -118,9 +131,6 @@ def parse_write_sgml(sgml_file, txt_dir, rel_fn):
         assert len(docnos)==1
         docno = re.sub(fmt['stripdocno'], "", str(docnos[0])).strip()
 
-        if docno not in rel_files:
-            continue
-
         docd[docno] = []
         texts = doc.find_all(fmt['text'])
         for text in texts:
@@ -146,8 +156,7 @@ if __name__=="__main__":
     txt_dir = sys.argv[3]
 
     if mode == "doc":
-        rel_fn = sys.argv[4]
-        parse_write_sgml(fil, txt_dir, rel_fn)
+        parse_write_sgml(fil, txt_dir)
 
     elif mode == "query":
         year = str(sys.argv[4])

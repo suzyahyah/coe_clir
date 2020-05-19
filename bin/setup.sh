@@ -19,3 +19,9 @@ wget https://raw.githubusercontent.com/stopwords-iso/stopwords-tl/master/stopwor
 assets/stopwords_TAGA.txt
 wget https://raw.githubusercontent.com/stopwords-iso/stopwords-sw/master/stopwords-sw.txt -O \
 assets/stopwords_SWAH.txt
+
+# install fairseq
+pip install fairseq
+conda install libgcc # we need this for fastBPE
+conda install -c anaconda libstdcxx-ng
+

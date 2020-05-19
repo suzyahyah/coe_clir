@@ -32,3 +32,7 @@ Process Documents for: Bitext, ANALYSIS, MT1, MT2, Query
 
 #### Running Query-Topic Diagnostics:
 `bash ./bin/run_diagnostics.sh`
+
+#### Prepare CLEF data
+Preparation of CLEF data goes through several stages before it is ready for the Pipeline0:
+

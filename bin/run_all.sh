@@ -1,20 +1,22 @@
 #!usr/bin/bash
 # Author: Suzanna Sia
 
-# document types to process for stage0 to stage6.
 source ./bin/utils.sh
-processd=(query mapping analysis bitext mt1 mt2) 
+
+# document types to process for stage0 to stage6.
+processd=(query rel analysis mt1 mt2) 
 baseline=0
 
 # start stage and end stage (inclusive)
-sstage=1 
-estage=1
+sstage=5
+estage=5
 
 # Stage0: Get Data
 # Stage1: Data statistics
 # Stage2: Data Preprocessing
 # Stage3: Polylingual Topic Modeling
-# Stage5: Index and Query Elastic search
+# Stage4: Index and Query Elastic Search (Topic Vectors)
+# Stage5: Index and Query Elastic search (Text)
 # Stage6: Combine trained models
 
 TEMP_DIR=/home/ssia/projects/coe_clir/data
@@ -27,15 +29,15 @@ declare -A MT1
 
 # this is correct
 L=(
-['SWAH']=${DATA_DIR}A
+#['SWAH']=${DATA_DIR}A
 ['TAGA']=${DATA_DIR}B
-['SOMA']=${DATA_DIR}S
+#['SOMA']=${DATA_DIR}S
 )
 
 MT1=(
-['SWAH']=${DATA_DIR2}A
+#['SWAH']=${DATA_DIR2}A
 ['TAGA']=${DATA_DIR2}B
-['SOMA']=${DATA_DIR2}S
+#['SOMA']=${DATA_DIR2}S
 )
 
 
@@ -60,39 +62,16 @@ EOF
   cat $1 | awk -F'\t' '{print $3}' > $fn.tmp; mv $fn.tmp $2/human_eng/$fn.txt
 }
 
-doc_stats() {
-    printf "\n=== $1, $2 ===\n"
-    
-    eng_nw=$(cat $TEMP_DIR/DOCS_$lang/$1/$2/* | wc -w)
-    src_nw=$(cat $TEMP_DIR/DOCS_$lang/$1/src/* | wc -w)
-    nlines=$(cat $TEMP_DIR/DOCS_$lang/$1/$2/* | wc -l)
-    ndocs=$(ls $TEMP_DIR/DOCS_$lang/$1/$2/* | wc -l)
-
-    eng_avg_nw_doc=$(awk "BEGIN{print $eng_nw/$ndocs}")
-    src_avg_nw_doc=$(awk "BEGIN{print $src_nw/$ndocs}")
-    eng_avg_nw_lin=$(awk "BEGIN{print $eng_nw/$nlines}")
-    src_avg_nw_lin=$(awk "BEGIN{print $src_nw/$nlines}")
-    avg_nlines=$(awk "BEGIN{print $nlines/$ndocs}")
-
-    printf "\tnum lines: $nlines\n" 
-    printf "\tnum docs: $ndocs\n"
-    printf "\tavg num lines per doc: $avg_nlines\n"
-    printf "\tavg nwords per line for eng: $eng_avg_nw_lin \n"
-    printf "\tavg nwords per line for src: $src_avg_nw_lin \n"
-
-    printf "\tavg nwords per doc for eng: $eng_avg_nw_doc \n"
-    printf "\tavg nwords per doc for src: $src_avg_nw_doc \n"
-}
 
 index_query_doc() {
     printf "\n$1 - STAGE5: Index and Query $2 Trans Docs:\n"
     python src/main.py --lang $1 --mode doc --system $2 --dims 0
 
-    score=$(./trec_eval/trec_eval -m map data/IRrels_$1/rels.tsv.dedup.trec \
+    score=$(./trec_eval/trec_eval -m map data/IRrels_$1/rels.txt.trec \
       results/ranking_$1.txt.$2 | awk '{print $3}') || exit 1
     printf "$1\t$2\t00\t$score\n" >> results/all.txt
 
-    ./trec_eval/trec_eval -q data/IRrels_$1/rels.tsv.dedup.trec \
+    ./trec_eval/trec_eval -q data/IRrels_$1/rels.txt.trec \
       results/ranking_$1.txt.$2 | grep "map\s*query\s*" | awk '{print $2" "$3}' > results/each_map_$1.$2
     printf "Result written to: results/each_map_$1.$2\n"
 }
@@ -103,38 +82,92 @@ for lang in "${!L[@]}"; do
 
   if [ $sstage -le 0 ] && [ $estage -ge 0 ]; then
   ##### Stage 0: Make Directories and Prepare data
-    # Handle Queries, BiText (Training), ANALYSIS(Testing), MAPPING(Testing)
-
-    # MAPPING
-    if [[ "${processd[@]}" =~ "mapping" ]]; then
-
+    # Handle Queries, BiText (Training), ANALYSIS(Testing), rel(Testing)
+    # rel
+    if [[ "${processd[@]}" =~ "rel" ]]; then
       rm_mk $TEMP_DIR/IRrels_$lang
 
       for i in 1 2 3; do
         sed "1d" ${L[$lang]}/ANALYSIS_ANNOTATION$i/query_annotation.tsv >> $TEMP_DIR/IRrels_$lang/rels.tsv
       done
-      cat $TEMP_DIR/IRrels_$lang/rels.tsv | sed -e "s/\r//g" | sort -u > $TEMP_DIR/IRrels_$lang/rels.tsv.dedup
+      cat $TEMP_DIR/IRrels_$lang/rels.tsv | sed -e "s/\r//g" | sort -u > $TEMP_DIR/IRrels_$lang/rels.tsv.tmp
     fi
 
 
     if [[ "${processd[@]}" =~ "query" ]]; then
       printf "Processing query for $lang... \n"
-
       rm_mk $TEMP_DIR/QUERY_$lang
-
       qtmp=$TEMP_DIR/QUERY_$lang/q.txt.tmp
-      relevfil=$TEMP_DIR/IRrels_$lang/rels.tsv.dedup
-
       cat ${L[$lang]}/QUERY{1,2,3}/query_list.tsv | sort -u > $qtmp
+      python src/queryparser.py $qtmp
+    fi
 
-      # keep only queries that are in relevance file
-      awk 'NR==FNR{a[$1];next} $1 in a{print $0}' $relevfil $qtmp > $TEMP_DIR/QUERY_$lang/q.txt
-      rm $qtmp
+    # ANALYSIS DOCUMENTS
+    if [[ "${processd[@]}" =~ "analysis" ]]; then
+      printf "Processing analysis docs for $lang..\n"
+      cdir=$TEMP_DIR/DOCS_$lang/ANALYSIS
 
-      python src/queryparser.py $TEMP_DIR/QUERY_$lang/q.txt
-      # need to figure out what to do with duplicate queries
+      rm_mk $cdir/translation.tmp
+      rm_mk $TEMP_DIR/DOCS_$lang/ANALYSIS/src
+      rm_mk $TEMP_DIR/DOCS_$lang/ANALYSIS/human_eng
+      cp ${L[$lang]}/ANALYSIS{1,2}/text/translation/* $cdir/translation.tmp
+    fi
+
+    ### Do 3-way join
+    relf=$TEMP_DIR/IRrels_$lang/rels.tsv.tmp
+    queryf=$TEMP_DIR/QUERY_$lang/q.txt.tmp.qp
+    docfold=$TEMP_DIR/DOCS_$lang/ANALYSIS/translation.tmp
+    python src/merge_keys.py "$relf" "$queryf" "$docfold"
+
+    ###
+
+    # Do further processing
+    if [[ "${processd[@]}" =~ "analysis" ]]; then
+      echo "extracting translations and src for $lang"
+      for fil in `ls $TEMP_DIR/DOCS_$lang/ANALYSIS/translation/*.txt`;
+      do 
+        extract_translations $fil $TEMP_DIR/DOCS_$lang/ANALYSIS;
+      done
+    fi
+
+    # MT Output
+    mt1dir=$TEMP_DIR/DOCS_$lang/ANALYSIS/mt1_eng
+    if [[ "${processd[@]}" =~ "mt1" ]]; then
+      
+      rm_mk $mt1dir.tmp
+      rm_mk $mt1dir
+
+      printf "$lang mt1\n"
+      ttfile=0.n
+
+      [[ "$lang" == "SWAH" ]] && ttfile=tt18.n;
+      [[ "$lang" == "TAGA" ]] && ttfile=tt20.n;
+      [[ "$lang" == "SOMA" ]] && ttfile=tt53.n;
+
+      cp ${MT1[$lang]}/ANALYSIS{1,2}/$ttfile/t_all/m1/* $mt1dir.tmp
+      for fil in $mt1dir.tmp/*; do
+        sed -i '/^$/d' $fil
+      done
+
+      python src/merge_keys.py "$relf" "$queryf" "$mt1dir.tmp"
+
+    #  cdir=$TEMP_DIR/DOCS_$lang/ANALYSIS
+    #  relevfil=$TEMP_DIR/IRrels_$lang/rels.tsv.dedup
+    #  bash ./bin/find_match.sh $cdir mt1_eng.tmp mt1_eng $relevfil
     fi
     
+    if [[ "${processd[@]}" =~ "mt2" ]]; then
+      printf "Processing mt2"
+      bash ./bin/mt2.sh $lang
+
+      mt2dir=$TEMP_DIR/DOCS_$lang/ANALYSIS/mt2_eng
+      python src/merge_keys.py "$relf" "$queryf" "$mt2dir.tmp"
+
+    #  cdir=$TEMP_DIR/DOCS_$lang/ANALYSIS
+    #  relevfil=$TEMP_DIR/IRrels_$lang/rels.tsv.dedup
+    #  bash ./bin/find_match.sh $cdir mt2_eng.tmp mt2_eng $relevfil
+    fi
+
     ### BiText
 
     if [[ "${processd[@]}" =~ "bitext" ]]; then
@@ -166,75 +199,6 @@ for lang in "${!L[@]}"; do
  
     fi
 
-    # ANALYSIS DOCUMENTS
-    if [[ "${processd[@]}" =~ "analysis" ]]; then
-      printf "Processing analysis docs for $lang..\n"
-
-      cdir=$TEMP_DIR/DOCS_$lang/ANALYSIS
-
-      rm_mk $cdir/translation.tmp
-      rm_mk $TEMP_DIR/DOCS_$lang/ANALYSIS/src
-      rm_mk $TEMP_DIR/DOCS_$lang/ANALYSIS/human_eng
-
-      #mkdir -p $TEMP_DIR/DOCS_$lang/ANALYSIS/translation
-
-      cp ${L[$lang]}/ANALYSIS{1,2}/text/translation/* $cdir/translation.tmp
-      # dont uncomment this
-      #cp ${L[$lang]}/ANALYSIS{1,2}/text/translation/* $fol
-
-      relevfil=$TEMP_DIR/IRrels_$lang/rels.tsv.dedup
-      bash ./bin/find_match.sh $cdir translation.tmp translation $relevfil
-
-      echo "extracting translations and src for $lang"
-      for fil in `ls $TEMP_DIR/DOCS_$lang/ANALYSIS/translation/*.txt`;
-      do 
-        extract_translations $fil $TEMP_DIR/DOCS_$lang/ANALYSIS;
-      done
-      #v1=$(wc -l $TEMP_DIR/DOCS_$lang/ANALYSIS/translation/* | tail -1)
-      #v2=$(wc -l $TEMP_DIR/DOCS_$lang/ANALYSIS/human_eng/* | tail -1)
-      #v3=$(wc -l $TEMP_DIR/DOCS_$lang/ANALYSIS/src/* | tail -1)
-
-      #if [ "$v1" == "$v2" ] && [ "$v1" == "$v3" ]; then
-      #  printf "nlines bitext $lang extracted: $v1\n"
-      #else
-      #  printf "CRITICAL: Something wrong with ANALYSIS extraction.. $v1 $v2"
-      #  exit 1
-      #fi
-    fi
-
-    # MT Output
-    mt1dir=$TEMP_DIR/DOCS_$lang/ANALYSIS/mt1_eng
-    if [[ "${processd[@]}" =~ "mt1" ]]; then
-      
-      rm_mk $mt1dir.tmp
-      rm_mk $mt1dir
-
-      printf "$lang mt1\n"
-      ttfile=0.n
-
-      [[ "$lang" == "SWAH" ]] && ttfile=tt18.n;
-      [[ "$lang" == "TAGA" ]] && ttfile=tt20.n;
-      [[ "$lang" == "SOMA" ]] && ttfile=tt53.n;
-
-      cp ${MT1[$lang]}/ANALYSIS{1,2}/$ttfile/t_all/m1/* $mt1dir.tmp
-      for fil in $mt1dir.tmp/*; do
-        sed -i '/^$/d' $fil
-      done
-
-      cdir=$TEMP_DIR/DOCS_$lang/ANALYSIS
-      relevfil=$TEMP_DIR/IRrels_$lang/rels.tsv.dedup
-      bash ./bin/find_match.sh $cdir mt1_eng.tmp mt1_eng $relevfil
-
-    fi
-    
-    if [[ "${processd[@]}" =~ "mt2" ]]; then
-      printf "Processing mt2"
-      bash ./bin/mt2.sh $lang
-
-      cdir=$TEMP_DIR/DOCS_$lang/ANALYSIS
-      relevfil=$TEMP_DIR/IRrels_$lang/rels.tsv.dedup
-      bash ./bin/find_match.sh $cdir mt2_eng.tmp mt2_eng $relevfil
-    fi
 
   fi 
 
@@ -245,27 +209,30 @@ for lang in "${!L[@]}"; do
 
     ### Queries
     if [[ "${processd[@]}" =~ "query" ]]; then
-      print_query $TEMP_DIR/QUERY_$lang/q.txt.qp
+      print_query $TEMP_DIR/QUERY_$lang/q.txt
     fi
 
     ### BiText
-    [[ "${processd[@]}" =~ "bitext" ]] && doc_stats "build-bitext" "eng";
+    [[ "${processd[@]}" =~ "bitext" ]] && doc_stats $TEMP_DIR/DOCS_$lang/build-bitext/eng
 
     # ANALYSIS Documents
-    [[ "${processd[@]}" =~ "analysis" ]] && doc_stats "ANALYSIS" "human_eng";
+    ANALYSISD=$TEMP_DIR/DOCS_$lang/ANALYSIS
+
+    [[ "${processd[@]}" =~ "analysis" ]] && doc_stats $ANALYSISD/human_eng
+    [[ "${processd[@]}" =~ "analysis" ]] && doc_stats $ANALYSISD/src
 
     # MT1 English Docs
-    [[ "${processd[@]}" =~ "mt1" ]] && doc_stats "ANALYSIS" "mt1_eng";
+    [[ "${processd[@]}" =~ "mt1" ]] && doc_stats $ANALYSISD/mt1_eng
 
     # MT2 English Docs
-    [[ "${processd[@]}" =~ "mt2" ]] && doc_stats "ANALYSIS" "mt2_eng";
+    [[ "${processd[@]}" =~ "mt2" ]] && doc_stats $ANALYSISD/mt2_eng
 
 
-    ##### Handling mapping 
+    ##### Handling rel 
 
-    if [[ "${processd[@]}" =~ "mapping" ]]; then
-      relsf=$TEMP_DIR/IRrels_$lang/rels.tsv.dedup
-      print_mapping $relsf
+    if [[ "${processd[@]}" =~ "rel" ]]; then
+      relsf=$TEMP_DIR/IRrels_$lang/rels.txt
+      print_rel $relsf
       awk '{print $1"\tQ0\t"$2"\t1"}' $relsf > $relsf.trec
     fi
   fi # end of stage 1
@@ -277,11 +244,38 @@ for lang in "${!L[@]}"; do
     # However for BM25 docs we want to do digit
     # and punctuation removal, and lowercase for preprocessing. 
     printf "\n$lang - STAGE2: Preprocessing:\n"
-    python src/preprocess.py --lang "$lang" --mode "tm"
+    #python src/preprocess.py --lang "$lang" --mode "tm"
+    analysis_src=$TEMP_DIR/DOCS_$lang/ANALYSIS/src
+    queryf=$TEMP_DIR/QUERY_$lang/q.txt
+    stopwordf=assets/stopwords_$lang.txt
 
-    [[ "${processd[@]}" =~ "analysis" ]] && python src/preprocess.py --lang "$lang" --mode "doc_human";
-    [[ "${processd[@]}" =~ "mt1" ]] && python src/preprocess.py --lang "$lang" --mode "doc_mt1";
-    [[ "${processd[@]}" =~ "mt2" ]] && python src/preprocess.py --lang "$lang" --mode "doc_mt2";
+    if [[ "${processd[@]}" =~ "bitext" ]]; then
+
+      bitext1=$TEMP_DIR/DOCS_$lang/build-bitext/eng
+      bitext2=$TEMP_DIR/DOCS_$lang/build-bitext/src
+      rm_mk "${bitext1}_tm"
+      rm_mk "${bitext2}_tm"
+
+      python src/preprocess.py --mode "tm" --docdir $bitext1 --sw assets/stopwords_en.txt
+      python src/preprocess.py --mode "tm" --docdir $bitext2 --sw $stopwordf
+
+    fi
+
+    rm_mk "${analysis_src}_tm"
+    python src/preprocess.py --mode "tm" --docdir $analysis_src --sw $stopwordf
+    python src/preprocess.py --mode "tm" --fn $queryf --sw assets/stopwords_en.txt 
+    
+    mt1dir=$TEMP_DIR/DOCS_$lang/ANALYSIS/mt1_eng
+    mt2dir=$TEMP_DIR/DOCS_$lang/ANALYSIS/mt2_eng
+    hudir=$TEMP_DIR/DOCS_$lang/ANALYSIS/human_eng
+
+    rm_mk ${mt1dir}_doc
+    rm_mk ${mt2dir}_doc
+    rm_mk ${hudir}_doc
+
+    [[ "${processd[@]}" =~ "analysis" ]] && python src/preprocess.py --mode "doc" --docdir $hudir;
+    [[ "${processd[@]}" =~ "mt1" ]] && python src/preprocess.py --mode "doc" --docdir $mt1dir;
+    [[ "${processd[@]}" =~ "mt2" ]] && python src/preprocess.py --mode "doc" --docdir $mt2dir;
   fi
 
   if [ $sstage -le 3 ] && [ $estage -ge 3 ]; then
@@ -299,10 +293,10 @@ for lang in "${!L[@]}"; do
     for k in 400; do # take the best TM
 
       python src/main.py --lang $lang --mode tm --dims $k --baseline $baseline
-      score=$(./trec_eval/trec_eval -m map data/IRrels_$lang/rels.tsv.dedup.trec \
+      score=$(./trec_eval/trec_eval -m map data/IRrels_$lang/rels.txt.trec \
       results/ranking_$lang.txt.tm | awk '{print $3}')
 
-      ./trec_eval/trec_eval -q data/IRrels_$lang/rels.tsv.dedup.trec \
+      ./trec_eval/trec_eval -q data/IRrels_$lang/rels.txt.trec \
       results/ranking_$lang.txt.tm | grep "map\s*query\s*" | awk '{print $2" "$3}' > results/each_map_$lang.tm
  
 
@@ -329,7 +323,7 @@ for lang in "${!L[@]}"; do
     for w in 0.01 0.05 0.1 0.15 0.20 0.25 0.3 0.35 0.40 0.45 0.5 0.55; do
       python src/combine_models.py $lang $w
       printf "weight $w $lang "
-      ./trec_eval/trec_eval -m map data/IRrels_$lang/rels.tsv.dedup.trec results/combine_$lang.txt
+      ./trec_eval/trec_eval -m map data/IRrels_$lang/rels.txt.trec results/combine_$lang.txt
     done
   fi
 

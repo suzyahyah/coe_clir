@@ -7,8 +7,8 @@ function rm_mk(){
 }
 
 
-function print_mapping(){
-  printf "\n=== mapping ===\n"
+function print_rel(){
+  printf "\n=== rel ===\n"
   mapf=$1
 
   v1=$(wc -l $mapf | awk '{print $1}')

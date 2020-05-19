@@ -60,8 +60,8 @@ def init():
         print("documents...")
         datadir = "/home/ssia/projects/coe_clir/data"
 
-        target_doc_fol = os.path.join(datadir, f"DOCS_{args.lang}/ANALYSIS/{system}_eng_proc_doc")
-        query_doc_fn = os.path.join(datadir, f"QUERY_{args.lang}/q.txt.qp")
+        target_doc_fol = os.path.join(datadir, f"DOCS_{args.lang}/ANALYSIS/{system}_eng_doc")
+        query_doc_fn = os.path.join(datadir, f"QUERY_{args.lang}/q.txt")
 
         target_json = utils.docs_to_json(target_doc_fol)
         queries_json = utils.queries_to_json(query_doc_fn)

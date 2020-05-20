@@ -31,26 +31,32 @@ import nltk
 
 lang = sys.argv[1]
 fild = sys.argv[2]
-newd = fild+"_en"
+newd = fild+"_en.tmp"
 
 #os.mkdir(fild+"_en")
 
 if lang == "russian":
-    m = "transformer.wmt19.ru-en"
+    m = "transformer.wmt19.ru-en.single_model"
+if lang == "german":
+    m = "transformer.wmt19.de-en.single_model"
 
 fns = os.listdir(fild)
 trans_fns = {}
 
 start = time.time()
 print(f"Translating from {lang} to en using {m}")
-model = torch.hub.load('pytorch/fairseq', m, tokenizer='moses', bpe='fastbpe', \
-        checkpoint_file='model1.pt:model2.pt:model3.pt:model4.pt')
+#model = torch.hub.load('pytorch/fairseq', m, tokenizer='moses', bpe='fastbpe', \
+#        checkpoint_file='model1.pt:model2.pt:model3.pt:model4.pt')
+model = torch.hub.load('pytorch/fairseq', m)
+
+model.eval()
 model.cuda()
 
+print("Total number of files:", len(fns))
 for i, fn in enumerate(fns):
 
     if i%10==0:
-        print(f"{i} files processed, time elapsed:{start-time.time()}")
+        print(f"{i} files processed, time elapsed:{time.time()-start}")
 
     with open(os.path.join(fild, fn), 'r') as f:
         data = f.readlines()
@@ -59,8 +65,18 @@ for i, fn in enumerate(fns):
         continue
 
     data = nltk.sent_tokenize(data[0])
-    en_txt = model.translate(data)# [model.translate(line) for line in data]
-    
+
+    # break up the sentences to avoid OOM errors
+    en_txts = []
+    while len(data)>0:
+        datax = data[:50]
+
+        # Size of sample can only be 1024.
+        # Skip sentences longer than 1024 
+        datax = [d for d in datax if len(d.split())<1024]
+        en_txts.extend(model.translate(datax))# [model.translate(line) for line in data]
+        data = data[50:]
+
     with open(os.path.join(newd, fn), 'w') as f:
-        f.write("\n".join(en_txt)+"\n")
+        f.write("\n".join(en_txts)+"\n")
 

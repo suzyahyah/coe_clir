@@ -33,10 +33,9 @@ function print_query(){
   ntotalqtext=$(cat $queryf | awk -F'\t' '{print $2}' | sort -u | wc -l)
   avgwords_q=$(cat $queryf | awk -F'\t' '{print $2}' | wc | awk '{print $2/$1}')
 
-  printf "\n=== Queries === \n"
+  printf "\n=== Queries === $1\n"
   printf "\tno. of unique $lang queryIDs: $ntotalq, unique text: $ntotalqtext \n"
   printf "\taverage no. of words: $avgwords_q\n"
-
 }
 
 function doc_stats() {

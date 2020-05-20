@@ -11,7 +11,7 @@ git clone https://github.com/mimno/Mallet.git
 cd Mallet && ant
 
 # Stopwords from https://github.com/stopwords-iso
-
+# MATERIAL languages
 mkdir -p assets
 wget https://raw.githubusercontent.com/stopwords-iso/stopwords-so/master/stopwords-so.txt -O \
 assets/stopwords_SOMA.txt
@@ -20,8 +20,25 @@ assets/stopwords_TAGA.txt
 wget https://raw.githubusercontent.com/stopwords-iso/stopwords-sw/master/stopwords-sw.txt -O \
 assets/stopwords_SWAH.txt
 
+# CLEF 
+https://raw.githubusercontent.com/stopwords-iso/stopwords-de/master/stopwords-de.txt
+
 # install fairseq
 pip install fairseq
 conda install libgcc # we need this for fastBPE
 conda install -c anaconda libstdcxx-ng
 
+# get fairseq models
+# wmt 19 de-en
+wget https://dl.fbaipublicfiles.com/fairseq/models/wmt19.de-en.joined-dict.ensemble.tar.gz
+# wmt 19 ru-en
+wget https://dl.fbaipublicfiles.com/fairseq/models/wmt19.ru-en.ensemble.tar.gz
+
+
+
+# get parallel data 
+PARALLELDIR=/home/hltcoe/ssia/parallel_corpora
+mkdir -p $PARALLELDIR
+wget -P $PARALLELDIR http://data.statmt.org/news-commentary/v14/training/news-commentary-v14.en-ru.tsv.gz
+tar zxvf
+wget http://data.statmt.org/news-commentary/v14/documents.tgz

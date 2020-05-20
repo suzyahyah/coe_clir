@@ -37,12 +37,18 @@ Accomplished with a three way inner join.
 
 """
 def init():
+
     rel_f = sys.argv[1]
     query_f = sys.argv[2]
     doc_fold = sys.argv[3]
 
+    if len(sys.argv)==5:
+        suffix = sys.argv[4]
+    else:
+        suffix=""
+
     # Setting up dataframes
-    rel_df = pd.read_csv(rel_f, names=['qid', 'docid'], sep="\t")
+    rel_df = pd.read_csv(rel_f, names=['qid', 'docid'], sep="\s+")
     q_df = pd.read_csv(query_f, names=['qid', 'q'], sep="\t")
 
     doc_fns = os.listdir(doc_fold)
@@ -60,10 +66,11 @@ def init():
     # write to file
     # clean up names
     rel_new.to_csv(rel_f[:rel_f.find('.')]+".txt", index=False, header=False, sep="\t")
-    q_new.to_csv(query_f[:query_f.find('.')]+".txt", index=False, header=False, sep="\t")
+    q_new.to_csv(query_f[:query_f.find('.')]+"_"+suffix+".txt", index=False, header=False, sep="\t")
 
     # copy relevant documents over to new folder
     new_folder = doc_fold[:doc_fold.find('.')]
+
     if os.path.isdir(new_folder):
         shutil.rmtree(new_folder)
         os.mkdir(new_folder)

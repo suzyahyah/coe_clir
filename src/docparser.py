@@ -118,6 +118,7 @@ def parse_write_sgml(sgml_file, txt_dir):
     fmt['doc'] = 'doc'
     fmt['docno'] = 'docno'
     fmt['text'] = 'text'
+    fmt['text2'] = 'tx'
     fmt['stripdocno'] = "<docno>|</docno>"
     fmt['striptext'] = "<text>|</text>"
 
@@ -125,26 +126,38 @@ def parse_write_sgml(sgml_file, txt_dir):
         for k in fmt.keys():
             fmt[k] = fmt[k].upper()
 
+
     for doc in soup.find_all(fmt['doc']):
         docnos = doc.find_all(fmt['docno'])
 
         assert len(docnos)==1
         docno = re.sub(fmt['stripdocno'], "", str(docnos[0])).strip()
 
-        docd[docno] = []
-        texts = doc.find_all(fmt['text'])
-        for text in texts:
-            text = re.sub(fmt['striptext'], "", str(text))
-            text = " ".join(text.split())
-            docd[docno].append(text.strip())
+        towrite = []
 
-        docd[docno] = "\n".join(docd[docno])
+        # Different file formatting
+        texts = doc.find_all(fmt['text'])
+        if len(texts)==0:
+            texts = doc.find_all(fmt['text2'])
+
+        for text in texts:
+            text = text.contents[0]
+            #text = re.sub(fmt['striptext'], "", str(text))
+            text = " ".join(text.split())
+            towrite.append(text.strip())
+        
+        towrite = "\n".join(towrite)
+        if len(towrite)==0:
+            continue
+        else:
+            docd[docno] = towrite
+            
 
     if len(docd.keys())>0:
         for docno in docd.keys():
             write_file = os.path.join(txt_dir, docno) + ".txt"
             with open(write_file, 'w', encoding='utf-8') as f:
-                f.write(docd[docno])
+                f.write(docd[docno]+"\n")
         #DB.dp(xcl=['soup', 'doc'])
             
         print(f"wrote {len(docd.keys())} files to folder {txt_dir}")

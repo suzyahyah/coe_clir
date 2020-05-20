@@ -245,38 +245,49 @@ for lang in "${!L[@]}"; do
     # and punctuation removal, and lowercase for preprocessing. 
     printf "\n$lang - STAGE2: Preprocessing:\n"
     #python src/preprocess.py --lang "$lang" --mode "tm"
-    analysis_src=$TEMP_DIR/DOCS_$lang/ANALYSIS/src
-    queryf=$TEMP_DIR/QUERY_$lang/q.txt
     stopwordf=assets/stopwords_$lang.txt
 
     if [[ "${processd[@]}" =~ "bitext" ]]; then
-
       bitext1=$TEMP_DIR/DOCS_$lang/build-bitext/eng
       bitext2=$TEMP_DIR/DOCS_$lang/build-bitext/src
       rm_mk "${bitext1}_tm"
       rm_mk "${bitext2}_tm"
-
       python src/preprocess.py --mode "tm" --docdir $bitext1 --sw assets/stopwords_en.txt
       python src/preprocess.py --mode "tm" --docdir $bitext2 --sw $stopwordf
-
     fi
 
-    rm_mk "${analysis_src}_tm"
-    python src/preprocess.py --mode "tm" --docdir $analysis_src --sw $stopwordf
-    python src/preprocess.py --mode "tm" --fn $queryf --sw assets/stopwords_en.txt 
+    # Process the Query for Topic Model
+    if [[ "${processd[@]}" =~ "query" ]]; then
+      queryf=$TEMP_DIR/QUERY_$lang/q.txt
+      python src/preprocess.py --mode "tm" --fn $queryf --sw assets/stopwords_en.txt 
+    fi
     
-    mt1dir=$TEMP_DIR/DOCS_$lang/ANALYSIS/mt1_eng
-    mt2dir=$TEMP_DIR/DOCS_$lang/ANALYSIS/mt2_eng
-    hudir=$TEMP_DIR/DOCS_$lang/ANALYSIS/human_eng
 
-    rm_mk ${mt1dir}_doc
-    rm_mk ${mt2dir}_doc
-    rm_mk ${hudir}_doc
+    # Process Src Docs for Topic Model and English Doc for BM25
+    if [[ "${processd[@]}" =~ "analysis" ]]; then
+      analysis_src=$TEMP_DIR/DOCS_$lang/ANALYSIS/src
+      rm_mk "${analysis_src}_tm"
+      python src/preprocess.py --mode "tm" --docdir $analysis_src --sw $stopwordf
 
-    [[ "${processd[@]}" =~ "analysis" ]] && python src/preprocess.py --mode "doc" --docdir $hudir;
-    [[ "${processd[@]}" =~ "mt1" ]] && python src/preprocess.py --mode "doc" --docdir $mt1dir;
-    [[ "${processd[@]}" =~ "mt2" ]] && python src/preprocess.py --mode "doc" --docdir $mt2dir;
-  fi
+      hudir=$TEMP_DIR/DOCS_$lang/ANALYSIS/human_eng
+      rm_mk ${hudir}_doc
+      python src/preprocess.py --mode "doc" --docdir $hudir
+    fi
+
+    # Process Translated English Docs for BM25
+    if [[ "${processd[@]}" =~ "mt1" ]]; then
+      mt1dir=$TEMP_DIR/DOCS_$lang/ANALYSIS/mt1_eng
+      rm_mk ${mt1dir}_doc
+      python src/preprocess.py --mode "doc" --docdir $mt1dir
+    fi
+
+    # Process Translated English Docs for BM25
+    if [[ "${processd[@]}" =~ "mt2" ]]; then
+      mt2dir=$TEMP_DIR/DOCS_$lang/ANALYSIS/mt2_eng
+      rm_mk ${mt2dir}_doc
+      python src/preprocess.py --mode "doc" --docdir $mt2dir
+    fi
+  fi # end of Stage2
 
   if [ $sstage -le 3 ] && [ $estage -ge 3 ]; then
     printf "\n$lang - STAGE3: train topic model:\n"

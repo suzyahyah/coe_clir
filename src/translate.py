@@ -28,6 +28,7 @@ import sys
 import time
 import pdb
 import nltk
+import re
 
 lang = sys.argv[1]
 fild = sys.argv[2]
@@ -39,6 +40,8 @@ if lang == "russian":
     m = "transformer.wmt19.ru-en.single_model"
 if lang == "german":
     m = "transformer.wmt19.de-en.single_model"
+if lang == "chinese":
+    m = "lightconv.glu.wmt17.zh-en"
 
 fns = os.listdir(fild)
 trans_fns = {}
@@ -47,7 +50,10 @@ start = time.time()
 print(f"Translating from {lang} to en using {m}")
 #model = torch.hub.load('pytorch/fairseq', m, tokenizer='moses', bpe='fastbpe', \
 #        checkpoint_file='model1.pt:model2.pt:model3.pt:model4.pt')
-model = torch.hub.load('pytorch/fairseq', m)
+if lang == "chinese":
+    model = torch.hub.load('pytorch/fairseq', m, tokenizer='moses', bpe='subword_nmt')
+else:
+    model = torch.hub.load('pytorch/fairseq', m)
 
 model.eval()
 model.cuda()
@@ -63,8 +69,13 @@ for i, fn in enumerate(fns):
     
     if len(data)==0:
         continue
-
-    data = nltk.sent_tokenize(data[0])
+    
+    if lang == "chinese":
+        # split chinese into sentences on spacing.
+        data = re.sub('([！？。；])', r'\1 ', data[0]).split()
+        #data = data[0].split()
+    else:
+        data = nltk.sent_tokenize(data[0])
 
     # break up the sentences to avoid OOM errors
     en_txts = []
@@ -73,8 +84,14 @@ for i, fn in enumerate(fns):
 
         # Size of sample can only be 1024.
         # Skip sentences longer than 1024 
-        datax = [d for d in datax if len(d.split())<1024]
-        en_txts.extend(model.translate(datax))# [model.translate(line) for line in data]
+        if lang == "chinese":
+            datax = [d for d in datax if len(d)<200]
+        else:
+            datax = [d for d in datax if len(d.split())<80]
+        try:
+            en_txts.extend(model.translate(datax))# [model.translate(line) for line in data]
+        except:
+            pdb.set_trace()
         data = data[50:]
 
     with open(os.path.join(newd, fn), 'w') as f:

@@ -2,7 +2,7 @@
 
 ### Dependencies
 * Python 3.6
-* ElasticSearch 7.5.0, Python Elastic Search CLient
+* ElasticSearch 7.5.0, Python Elastic Search CLient 7.1.0
 * trec_eval
 
 ### Usage
@@ -11,6 +11,15 @@
 
 #### Corpus Statistics
 see stats.txt, generated from stage 0:1
+
+#### Preparing bitext
+For MATERIAL, Bitext comes with the MATERIAL Directories
+
+For CLEF, TREC, Bitext is obtained from News-Commentary (WMT19)
+http://data.statmt.org/news-commentary/v14/
+`bash ./bin/prep_bitext.sh`
+
+# Todo: Instructions on how to get parallel corpora
 
 #### Run Pipeline in Stages
 

@@ -28,9 +28,7 @@ from os import path
 from collections import defaultdict
 from bs4 import BeautifulSoup as bs
 
-
-
-def extract_queries(sgml_file, query_dir, year="00"):
+def extract_queries(sgml_file, write_dir, year="", dformat=""):
     
     with open(sgml_file) as f:
         soup = bs(f.read(), 'html.parser')
@@ -43,9 +41,15 @@ def extract_queries(sgml_file, query_dir, year="00"):
     queries_all = []
     queries_title = []
 
+    if dformat=="trec":
+        rep = "Number: CH"
+    else:
+        rep = "C"
+
+
     for qry in queries:
         qid = qry.find('num').contents[0].strip()
-        qid = qid.replace('C','query')
+        qid = qid.replace(rep,'query')
 
         if year=="00":
             qtext = qry.find_all('num')[0].contents[1]
@@ -57,7 +61,7 @@ def extract_queries(sgml_file, query_dir, year="00"):
             title = ""
 
             for tag in tags:
-                if qry.find(tag) is not None:
+                if qry.find(tag) is not None and "c-" not in tag:
                     alltext.append(qry.find(tag).contents[0])
 
                     if "title" in tag:
@@ -72,19 +76,18 @@ def extract_queries(sgml_file, query_dir, year="00"):
         queries_all.append(qid+"\t"+alltext)
         queries_title.append(qid+"\t"+title)
 
-    print(f"{len(queries_all)} queries written to {query_dir}")
+    print(f"{len(queries_all)} queries written to {write_dir}")
 
     queries_all = "\n".join(queries_all)
-    with open(os.path.join(query_dir, f'query{year}_all.txt'), 'w') as f:
+    with open(os.path.join(write_dir, f'query{year}_all.txt'), 'w') as f:
         f.write(queries_all + "\n")
     
     queries_title = "\n".join(queries_title)
-    with open(os.path.join(query_dir, f'query{year}_title.txt'), 'w') as f:
+    with open(os.path.join(write_dir, f'query{year}_title.txt'), 'w') as f:
         f.write(queries_title + "\n")
  
 
-
-def parse_write_sgml(sgml_file, txt_dir):
+def parse_write_sgml(sgml_file, write_dir):
     """Method used to parse sgml files
 
     Args:
@@ -146,7 +149,7 @@ def parse_write_sgml(sgml_file, txt_dir):
             text = " ".join(text.split())
             towrite.append(text.strip())
         
-        towrite = "\n".join(towrite)
+        towrite = "\n".join(towrite).strip()
         if len(towrite)==0:
             continue
         else:
@@ -155,25 +158,30 @@ def parse_write_sgml(sgml_file, txt_dir):
 
     if len(docd.keys())>0:
         for docno in docd.keys():
-            write_file = os.path.join(txt_dir, docno) + ".txt"
+            write_file = os.path.join(write_dir, docno) + ".txt"
             with open(write_file, 'w', encoding='utf-8') as f:
                 f.write(docd[docno]+"\n")
         #DB.dp(xcl=['soup', 'doc'])
             
-        print(f"wrote {len(docd.keys())} files to folder {txt_dir}")
+        print(f"wrote {len(docd.keys())} files to folder {write_dir}")
 
 if __name__=="__main__":
 
     mode = sys.argv[1]
     fil = sys.argv[2]
-    txt_dir = sys.argv[3]
+    write_dir = sys.argv[3]
 
     if mode == "doc":
-        parse_write_sgml(fil, txt_dir)
+        parse_write_sgml(fil, write_dir)
 
     elif mode == "query":
-        year = str(sys.argv[4])
-        extract_queries(fil, txt_dir, year)
+        if len(sys.argv)==5:
+            year = str(sys.argv[4])
+            extract_queries(fil, write_dir, year)
+        else:
+            # trec format
+            extract_queries(fil, write_dir, dformat="trec")
+
 
 
 

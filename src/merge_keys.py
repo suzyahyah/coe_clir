@@ -67,31 +67,31 @@ def init():
     # clean up names
     rel_new.to_csv(rel_f[:rel_f.find('.')]+".txt", index=False, header=False, sep="\t")
     q_new.to_csv(query_f[:query_f.find('.')]+"_"+suffix+".txt", index=False, header=False, sep="\t")
-
-    # copy relevant documents over to new folder
-    new_folder = doc_fold[:doc_fold.find('.')]
-
-    if os.path.isdir(new_folder):
-        shutil.rmtree(new_folder)
-        os.mkdir(new_folder)
-
-    for fn in doc_new['docid_sfx'].values:
-        old_fn = os.path.join(doc_fold, fn)
-        new_fn = os.path.join(new_folder, fn)
-        shutil.copy(old_fn, new_fn)
-
-    # save valid qids
-    qids = list(q_new['qid'].values)
-    query_fold = os.path.dirname(query_f)
-    with open(os.path.join(query_fold, 'valid_qids'), 'w') as f:
-        f.write("\n".join(qids))
+#
+#    # copy relevant documents over to new folder
+#    #new_folder = doc_fold[:doc_fold.find('.')]
+#
+#    if os.path.isdir(new_folder):
+#        shutil.rmtree(new_folder)
+#        os.mkdir(new_folder)
+#
+#    for fn in doc_new['docid_sfx'].values:
+#        old_fn = os.path.join(doc_fold, fn)
+#        new_fn = os.path.join(new_folder, fn)
+#        shutil.copy(old_fn, new_fn)
+#
+#    # save valid qids
+#    qids = list(q_new['qid'].values)
+#    query_fold = os.path.dirname(query_f)
+#    with open(os.path.join(query_fold, 'valid_qids'), 'w') as f:
+#        f.write("\n".join(qids))
 
 
     # save valid docids one level up
-    docids = list(doc_new['docid'].values)
-    with open(os.path.join(doc_fold, '..', 'valid_docids'), 'w') as f:
-        f.write("\n".join(docids))
-
+#    docids = list(doc_new['docid'].values)
+#    with open(os.path.join(doc_fold, '..', 'valid_docids'), 'w') as f:
+#        f.write("\n".join(docids))
+#
 
 if __name__ == "__main__":
     init()

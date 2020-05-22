@@ -95,7 +95,7 @@ conv_encoding() {
     [[ $encoding == "us-ascii" ]] && encoding="US-ASCII"
     [[ $encoding == "utf-16le" ]] && encoding="UTF-16LE"
 
-    echo "$encoding > utf-8 $fil"
+    #echo "$encoding > utf-8 $fil"
     iconv -f ${encoding} -t UTF-8 $fil > ${fil}.t
 
     if [ $? -eq 0 ]; then
@@ -109,3 +109,23 @@ conv_encoding() {
   fi
 } 2>encoding.err
 
+
+
+trec_map() {
+
+  relf=$1
+  resf=$2
+  topics=$3
+  writef=$4
+  lang=$5
+  system=$6
+
+  score=$(./trec_eval/trec_eval -m map $relf.trec $resf | awk '{print $3}') || exit 1
+  printf "$lang\t$system\t$topics\t$score\n" >> $writef
+  echo "MAP Results written to $writef"
+
+  #MAP score for each query
+  ./trec_eval/trec_eval -q $relf.trec $resf | grep "map\s*query\s*" | awk '{print $2" "$3}' > $writef.each
+  printf "MAP for each Query written to: $writef.each \n"
+
+}

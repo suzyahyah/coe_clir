@@ -83,16 +83,16 @@ if __name__=="__main__":
     pipe = Pipeline()
 
 
-    print(f"Preprocessing for : {args.fn} {args.docdir}, {args.mode}")
+    print(f"\nPreprocessing for : {args.fn} {args.docdir}, {args.mode}")
 
     if args.mode == "tm":
+        pipe.load_stopwords(args.sw)
 
    #     dir1 = f'data/DOCS_{args.lang}/build-bitext/eng'
    #     dir2 = f'data/DOCS_{args.lang}/build-bitext/src'
    #     dir3 = f'data/DOCS_{args.lang}/ANALYSIS/src'
 
         if args.docdir:
-            pipe.load_stopwords(args.sw)
             proc_and_save(args.docdir, stopwords=True, mode=args.mode)
 
         #pipe.load_stopwords(f'assets/stopwords_{args.lang}.txt')
@@ -109,14 +109,25 @@ if __name__=="__main__":
             # the first token of each line (whitespace delimited, with optional comma) becomes the
             # instance name, the second token becomes the label, and all additional text on the line
             # is interpreted as a sequence of word tokens.
-            queries = [q[0]+" Q0 "+" ".join(q[1:]) for q in queries]
+            queries = [q[0]+" Q0 "+pipe.strip_clean(" ".join(q[1:]), stopwords=True) for q in queries]
             with open(args.fn+".tm", 'w') as f:
                 f.write("\n".join(queries)+"\n")
 
 
     if "doc" in args.mode:
         #mode, system = args.mode.split('_')
-        proc_and_save(args.docdir, stopwords=False, mode=args.mode)
+        if args.fn:
+            with open(args.fn, 'r') as f:
+                queries = f.readlines()
+
+            queries = [q.strip().lower().split() for q in queries]
+            queries = [q[0]+"\t" + pipe.strip_clean(" ".join(q[1:]), stopwords=False) for q in queries]
+
+            with open(args.fn+".doc", 'w') as f:
+                f.write("\n".join(queries)+"\n")
+
+        elif args.docdir:
+            proc_and_save(args.docdir, stopwords=False, mode=args.mode)
         #dir1 = f'data/DOCS_{args.lang}/ANALYSIS/src'
         #dir1 = f'data/DOCS_{args.lang}/ANALYSIS/{system}_eng'
 

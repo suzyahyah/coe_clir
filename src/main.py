@@ -16,12 +16,19 @@ import utils
 import argparse
 
 argparser = argparse.ArgumentParser()
-argparser.add_argument('--lang', type=str, required=True)
+#argparser.add_argument('--lang', type=str, required=True)
 argparser.add_argument('--mode', type=str, required=True)
-argparser.add_argument('--system', type=str, required=False)
 argparser.add_argument('--dims', type=int, default=0)
 argparser.add_argument('--baseline', type=int, default=0, required=False)
+argparser.add_argument('--query_fn', type=str, required=True)
+argparser.add_argument('--target_fn', type=str, required=False)
+argparser.add_argument('--resf', type=str, required=False)
+
 args = argparser.parse_args()
+
+from debugger import Debugger
+DB = Debugger()
+
 
 INDEX_NAME="coe"
 SEARCH_SIZE = 5
@@ -30,20 +37,21 @@ def init():
     client = Elasticsearch([{'host':'localhost', 'port':9200}])
     mode = args.mode
     dims = args.dims
-    system = args.system
 
     client = setup_es(client, INDEX_NAME, mode, dims)
 
     # Topics
     if "tm" in mode:
-        system = "tm"
-        mdir = "/home/ssia/projects/coe_clir/malletfiles"
+#        mdir = "malletfiles"
 
-        target_topics_fn = os.path.join(mdir, f"{args.lang}/SrcTopics.txt.{dims}")
-        query_topics_fn = os.path.join(mdir, f"{args.lang}/QueryTopics.txt.{dims}")
+#        target_topics_fn = os.path.join(mdir, f"{args.lang}/SrcTopics.txt.{dims}")
+#        query_topics_fn = os.path.join(mdir, f"{args.lang}/QueryTopics.txt.{dims}")
 
-        target_json = utils.topics_to_json(target_topics_fn)
-        queries_json = utils.topics_to_json(query_topics_fn, query=True)
+#        target_json = utils.topics_to_json(target_topics_fn)
+#        queries_json = utils.topics_to_json(query_topics_fn, query=True)
+
+        target_json = utils.topics_to_json(args.target_fn)
+        queries_json = utils.topics_to_json(args.query_fn, query=True)
 
         if args.baseline == 1:
             print(">Running random baseline")
@@ -58,13 +66,16 @@ def init():
     # Text
     elif mode == "doc":
         print("documents...")
-        datadir = "/home/ssia/projects/coe_clir/data"
+        
+        #datadir = "/home/ssia/projects/coe_clir/data"
+        #target_doc_fol = os.path.join(datadir, f"DOCS_{args.lang}/ANALYSIS/{system}_eng_doc")
+        #query_doc_fn = os.path.join(datadir, f"QUERY_{args.lang}/q.txt")
 
-        target_doc_fol = os.path.join(datadir, f"DOCS_{args.lang}/ANALYSIS/{system}_eng_doc")
-        query_doc_fn = os.path.join(datadir, f"QUERY_{args.lang}/q.txt")
+        #target_json = utils.docs_to_json(target_doc_fol)
+        #queries_json = utils.queries_to_json(query_doc_fn)
 
-        target_json = utils.docs_to_json(target_doc_fol)
-        queries_json = utils.queries_to_json(query_doc_fn)
+        target_json = utils.docs_to_json(args.target_fn)
+        queries_json = utils.queries_to_json(args.query_fn)
 
     # refac this into utils
     #print(client.indices.get_mapping(index=INDEX_NAME))
@@ -72,10 +83,10 @@ def init():
     errors = helpers.bulk(client, target_json, refresh=True)
 
     scores = score_queries(client, queries_json, mode)
-    with open(f'results/ranking_{args.lang}.txt.{system}', 'w') as f:
+    with open(args.resf, 'w') as f:
         f.write("\n".join(scores))
 
-    print(f"Results written to: results/ranking_{args.lang}.txt.{system}")
+    print(f"Results written to: {args.resf}")
 
 def score_queries(client, queries_json, mode):
     script_query = utils.get_query_template(mode=mode)
@@ -84,6 +95,7 @@ def score_queries(client, queries_json, mode):
     print("searching for queries..")
     no_results = []
     seen = set()
+
 
     for q in queries_json:
         if q['docid'] in seen:

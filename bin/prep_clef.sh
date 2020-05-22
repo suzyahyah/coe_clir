@@ -6,10 +6,12 @@ source ./bin/utils.sh
 # This Script prepares Clef Data before it can be used in Stage 1-5 of the Pipeline
 # This is Stage 0: Getting/Preparing Data
 
-sstage=0
-estage=0
-translate=1
+sstage=3
+estage=3
+translate=0
 reset=0 # copies all directories
+merge=0
+baseline=0
 
 processd=()
 
@@ -24,7 +26,7 @@ DOCS_org=$DIR0003_org/DocumentData/DataCollections
 
 RELS=$DIR0003/RelAssess
 QUERIES=$DIR0003/Topics
-PARALLEL=/home/hltcoe/ssia/parallel_corpora/split
+BITEXT=/home/hltcoe/ssia/parallel_corpora/split
 
 declare -A L
 declare -A L_org
@@ -32,8 +34,8 @@ declare -A L_org
 L=(
 #['english']=${DOCS}/English_data
 #['french']=${DOCS}/French_data
-#['german']=${DOCS}/German_data
-['russian']=${DOCS}/Russian_data
+['german']=${DOCS}/German_data
+#['russian']=${DOCS}/Russian_data
 #['spanish']=${DOCS}/Spanish_data
 )
 
@@ -123,6 +125,7 @@ for lang in "${!L[@]}"; do
       echo "Processing rel files..."
       relf=$RELS/all_yrs/qrels_${lang}.txt
       [[ -f $relf ]] && rm $relf
+
       mkdir -p $RELS/all_yrs
       cat $RELS/{2000,2001,2002,2003}rels/qrels_${lang} > $relf
       # Keep only the rel mappings "1" in 4th column
@@ -130,57 +133,57 @@ for lang in "${!L[@]}"; do
 
       # The queries from rel file are inconsistent with the query file names. query08 should be
       # query008. We need to reformat the double digit queries to three digits.
-      awk '{ if (length($1)==2) {print "query0"$1" "$3} else {print "query"$1" "$3}}' $relf.temp > $relf
+      awk '{ if (length($1)==1) {print "query00"$1" "$3} if (length($1)==2) {print "query0"$1" "$3} if (length($1)==3) {print "query"$1" "$3}}' $relf.temp > $relf
       rm $relf.temp
 
       # Prepare trec eval format
-      awk '{print $1"\tQ0\t"$2"\t1"}' $relf > $relf.trec
     fi
 
     # Fixing Docs
     if [[ "${processd[@]}" =~ "doc" ]]; then
-      rm -r ${L[$lang]}
-      cp -r ${L_org[$lang]} $DOCS
-
-      # First, untar all the files 
-      for subdir in `ls -d ${L[$lang]}`; do
-        printf "Untaring $subdir"
-        ls $subdir/*.tgz | xargs -n1 -I % tar -xzf % -C $subdir
-      done
-
-      # Next, fix naming for all files.
-
-      if [ "$lang" == "english" ]; then
-        mkdir -p $DOCS/English_data/la
-        mv $DOCS/English_data/la*.gz $DOCS/English_data/la
-        gunzip $DOCS/English_data/la/*.gz
-        ls -I "*.sgml" $DOCS/English_data/la/*  | xargs -n1 -I % mv % %.sgml
-      fi
-
-      if [ "$lang" == "french" ]; then
-        ls -I "*.dtd" -I "*.sgml" $DOCS/French_data/new_docno/*  | xargs -n1 -I % mv % %.sgml
-        mv $DOCS/French_data/new_docno/lemonde.dtd.sgml $DOCS/French_data/new_docno/lemonde.dtd
-      fi
-
-      if [ "$lang" == "russian" ]; then
-        rename '.xml' '.sgml' $DOCS/Russian_data/xml/*
-      fi
-
-      if [ "$lang" == "german" ]; then
-        rename '.erg' '.sgml' $DOCS/German_data/fr_rundschau/*
-        ls -I "*.dtd" -I "*.sgml" $DOCS/German_data/der_spiegel/* | xargs -n1 -I % mv % %.sgml
-        mv $DOCS/German_data/der_spiegel/derspiegel.dtd.sgml \
-        $DOCS/German_data/der_spiegel/derspiegel.dtd
-      fi
-
+#      rm -r ${L[$lang]}
+#      cp -r ${L_org[$lang]} $DOCS
+#
+#      # First, untar all the files 
+#      for subdir in `ls -d ${L[$lang]}`; do
+#        printf "Untaring $subdir"
+#        ls $subdir/*.tgz | xargs -n1 -I % tar -xzf % -C $subdir
+#      done
+#
+#      # Next, fix naming for all files.
+#
+#      if [ "$lang" == "english" ]; then
+#        mkdir -p $DOCS/English_data/la
+#        mv $DOCS/English_data/la*.gz $DOCS/English_data/la
+#        gunzip $DOCS/English_data/la/*.gz
+#        ls -I "*.sgml" $DOCS/English_data/la/*  | xargs -n1 -I % mv % %.sgml
+#      fi
+#
+#      if [ "$lang" == "french" ]; then
+#         ls -I "*.dtd" -I "*.sgml" $DOCS/French_data/new_docno/*  | xargs -n1 -I % mv % %.sgml
+#         mv $DOCS/French_data/new_docno/lemonde.dtd.sgml $DOCS/French_data/new_docno/lemonde.dtd
+#      fi
+#
+#      if [ "$lang" == "russian" ]; then
+#        rename '.xml' '.sgml' $DOCS/Russian_data/xml/*
+#      fi
+#
+#      if [ "$lang" == "german" ]; then
+#        rename '.erg' '.sgml' $DOCS/German_data/fr_rundschau/*
+#        ls -I "*.dtd" -I "*.sgml" $DOCS/German_data/der_spiegel/* | xargs -n1 -I % mv % %.sgml
+#        mv $DOCS/German_data/der_spiegel/derspiegel.dtd.sgml \
+#        $DOCS/German_data/der_spiegel/derspiegel.dtd
+#      fi
+#
       # Next, extract documents from sgml files
-      for subdir in `ls -I 'valid_ids' -I 'README' -I '*.tgz' -I '*.dtd' -I '*_txt' ${L[$lang]}`; do
-        rm_mk ${L[$lang]}/${subdir}_txt
-        for fil in `ls ${L[$lang]}/${subdir}/*.sgml`; do
-          conv_encoding $fil
-          python src/docparser.py doc ${fil} ${L[$lang]}/${subdir}_txt 
-        done
-      done
+#      for subdir in `ls -I 'valid_ids' -I 'README' -I '*.tgz' -I '*.dtd' -I '*_txt' ${L[$lang]}`; do
+#        rm_mk ${L[$lang]}/${subdir}_txt
+#        echo "Extracting docs from $subdir.."
+#        for fil in `ls ${L[$lang]}/${subdir}/*.sgml`; do
+#          conv_encoding $fil
+#          python src/docparser.py doc ${fil} ${L[$lang]}/${subdir}_txt 
+#        done
+#      done
 
       # Copy all documents into specific all_docs folder
       rm_mk ${L[$lang]}/all_docs
@@ -195,26 +198,41 @@ for lang in "${!L[@]}"; do
       # Note this requires rtx gpus on COE-Grid
     if [[ $translate -eq 1 ]]; then
       #fild=${L[$lang]}/der_spiegel_txt
-      fild=${L[$lang]}/all_docs
+      #fild=${L[$lang]}/sda95_txt
+      fild=${L[$lang]}/fr_rundschau_txt1
+      #fild=${L[$lang]}/all_docs
+      #fild=${L[$lang]}/xml_txt
       #rm_mk ${fild}_en.tmp
       echo "Translating $lang.."
       python src/translate.py $lang $fild
     fi
 
-    # After processing all the files, do a 3way join
-    relf=$RELS/all_yrs/qrels_${lang}.txt
-    query1=$QUERIES/QUERY_english/query_all.txt
-    query2=$QUERIES/QUERY_english/query_title.txt
-    fild=${L[$lang]}/all_docs_en
-    rm_mk $fild
+    if [[ $merge -eq 1 ]]; then
+    # After processing all the files, do a 3way join such that
+    # queries must have a valid line in the rels file
+    # relevant lines must have a valid query
+    # query must have valid document.
 
-    [ ! -f $relf ] && echo "Generate $relf first" && exit 1
+      echo "Merging relf, docids, qids"
 
+      relf=$RELS/all_yrs/qrels_${lang}.txt
+      query1=$QUERIES/QUERY_english/query_all.txt
+      query2=$QUERIES/QUERY_english/query_title.txt
+      fild=${L[$lang]}/all_docs_en
+#      rm_mk $fild
 
-    python src/merge_keys.py "$relf" "$query1" "$fild.tmp" $lang
-    python src/merge_keys.py "$relf" "$query2" "$fild.tmp" $lang
+      [ ! -f $relf ] && echo "Generate $relf first" && exit 1
+      [ ! -d $fild.tmp ] && echo "Generate $fild.tmp first" && exit 1
 
-    rm -r $fild.tmp
+      python src/merge_keys.py "$relf" "$query1" "$fild.tmp" $lang
+      python src/merge_keys.py "$relf" "$query2" "$fild.tmp" $lang
+
+      # Prepare trec format
+      [[ -f $relf.trec ]] && rm $relf.trec
+      awk '{print $1"\tQ0\t"$2"\t1"}' $relf > $relf.trec
+#      rm -r $fild.tmp
+    fi
+
   fi # end Stage0
 
 
@@ -228,7 +246,7 @@ for lang in "${!L[@]}"; do
     fi
 
     ### BiText
-    [[ "${processd[@]}" =~ "bitext" ]] && doc_stats $PARALLEL/DOCS_$lang/build-bitext/eng
+    [[ "${processd[@]}" =~ "bitext" ]] && doc_stats $BITEXT/DOCS_$lang/build-bitext/eng
 
     # Documents
     [[ "${processd[@]}" =~ "doc" ]] && doc_stats ${L[$lang]}/all_docs_en
@@ -236,24 +254,134 @@ for lang in "${!L[@]}"; do
 
     ### Handling rel 
 
-    if [[ "${processd[@]}" =~ "rel" ]]; then
-      relsf=$TEMP_DIR/IRrels_$lang/rels.txt
-      print_rel $relsf
-      awk '{print $1"\tQ0\t"$2"\t1"}' $relsf > $relsf.trec
-    fi
-  fi
+    [[ "${processd[@]}" =~ "rel" ]] && print_rel $RELS/all_yrs/qrels_${lang}.txt
+  fi # End Stage 1
 
 
 
   if [ $sstage -le 2 ] && [ $estage -ge 2 ]; then
-    printf "\n$lang - STAGE1: Calculating Statistics"
+    printf "\n$lang - STAGE2: Preprocessing"
     # Train CrossLingual Topic Models
     # Convert source language to Topic Vector
     # Convert query to Topic Vector
     # Index and Retrieve for Topic Models
+    
+    # get stopwords
+    stopwordf=assets/stopwords_$lang.txt
+  
+    # Process bitext for Topic Model
+    if [[ "${processd[@]}" =~ "bitext" ]]; then
+
+      bitext1=$BITEXT/DOCS_$lang/build-bitext/eng
+      bitext2=$BITEXT/DOCS_$lang/build-bitext/src
+      rm_mk "${bitext1}_tm"
+      rm_mk "${bitext2}_tm"
+      python src/preprocess.py --mode "tm" --docdir $bitext1 --sw assets/stopwords_en.txt
+      python src/preprocess.py --mode "tm" --docdir $bitext2 --sw $stopwordf
+
+    fi
+
+    # Process the Query for Topic Model and for BM25
+    if [[ "${processd[@]}" =~ "query" ]]; then
+      queryf_all=$QUERIES/QUERY_english/query_all_${lang}.txt
+      queryf_title=$QUERIES/QUERY_english/query_title_${lang}.txt
+
+      python src/preprocess.py --mode "tm" --fn $queryf_all --sw assets/stopwords_en.txt 
+      python src/preprocess.py --mode "tm" --fn $queryf_title --sw assets/stopwords_en.txt 
+
+      python src/preprocess.py --mode "doc" --fn $queryf_all --sw assets/stopwords_en.txt 
+      python src/preprocess.py --mode "doc" --fn $queryf_title --sw assets/stopwords_en.txt 
+    fi
+
+    # Process Src Docs for Topic Model and Translated(English) Doc for BM25
+    if [[ "${processd[@]}" =~ "doc" ]]; then
+
+      src_docs=${L[$lang]}/all_docs
+      rm_mk "${src_docs}_tm"
+      python src/preprocess.py --mode "tm" --docdir $src_docs --sw $stopwordf
+
+      en_docs=${L[$lang]}/all_docs_en
+      rm_mk ${en_docs}_doc
+      python src/preprocess.py --mode "doc" --docdir $en_docs --sw $assets/stopwords_en.txt
+
+    fi
   fi
 
+  if [ $sstage -le 3 ] && [ $estage -ge 3 ]; then
+    printf "\n$lang - STAGE3: train topic model:\n"
+    #for k in 10 20 50 100 200 300 400 500; do
+    BITEXTD=$BITEXT/DOCS_$lang/build-bitext
+    TESTD=${L[$lang]}/all_docs
 
+    #for qtype in all title; do
+    for qtype in all; do
+
+      QUERYF=$QUERIES/QUERY_english/query_${qtype}_${lang}.txt.tm
+#      for k in 10 20; do
+      for k in 10 20 50 100 200 300 400; do
+        bash ./bin/runPolyTM.sh train $BITEXTD $lang $k $TESTD $QUERYF
+        bash ./bin/runPolyTM.sh infer $BITEXTD $lang $k $TESTD $QUERYF
+      done
+    done
+  fi 
+
+
+  if [ $sstage -le 4 ] && [ $estage -ge 4 ]; then
+    printf "\n$lang - STAGE4: test topic model:\n"
+#    for k in 10 20 50 100 200 300 400 500; do
+    #for k in 600 700; do
+    mkdir -p results/CLEF
+
+    if [ $baseline -eq 1 ]; then
+      suffix=".baseline_tm"
+    else
+      suffix=""
+    fi
+
+    for k in 10; do # take the best TM
+
+      qfn=malletfiles/$lang/QueryTopics.txt.$k
+      tfn=malletfiles/$lang/SrcTopics.txt.$k
+      relf=$RELS/all_yrs/qrels_${lang}.txt
+      resf=results/CLEF/ranking_$lang.txt.tm
+      writef=results/CLEF/${lang}_tm_map.txt
+
+      python src/main.py --mode tm --dims $k \
+                        --query_fn $qfn --target_fn $tfn --resf $resf
+
+      trec_map "$relf" "$resf" "$k" "${writef}${suffix}" "$lang" "tm" 
+    done
+  fi # End Stage 4
+
+
+  if [ $sstage -le 5 ] && [ $estage -ge 5 ]; then
+
+    qfn=$QUERIES/QUERY_english/query_title_${lang}.txt.doc
+    tfn=${L[$lang]}/all_docs_en_doc
+    relf=$RELS/all_yrs/qrels_${lang}.txt
+    resf=results/CLEF/ranking_$lang.txt.doc
+    writef=results/CLEF/${lang}_doc_map.txt
+
+    python src/main.py --mode doc --dims 0 \
+                      --query_fn $qfn --target_fn $tfn --resf $resf
+
+    trec_map "$relf" "$resf" "00" "$writef" "$lang" "doc" 
+#    [[ "${processd[@]}" =~ "analysis" ]] && index_query_doc "$lang" "human";
+      
+#    [[ "${processd[@]}" =~ "mt1" ]] && index_query_doc "$lang" "mt1";
+#
+#    [[ "${processd[@]}" =~ "mt2" ]] && index_query_doc "$lang" "mt2";
+ 
+  fi # End stage 5
+
+  if [ $sstage -le 6 ] && [ $estage -ge 6 ]; then
+    for w in 0.01 0.05 0.1 0.15 0.20 0.25 0.3 0.35 0.40 0.45 0.5 0.55; do
+      python src/combine_models.py $lang $w
+      printf "weight $w $lang "
+      ./trec_eval/trec_eval -m map data/IRrels_$lang/rels.txt.trec results/combine_$lang.txt
+    done
+
+  fi # End Stage 6
 
 done # iterate languages
 

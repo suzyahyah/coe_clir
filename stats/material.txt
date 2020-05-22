@@ -1,0 +1,132 @@
+
+TAGA - STAGE1: Calculating Statistics:
+
+=== Queries === 
+	no. of unique TAGA queryIDs: 483, unique text: 481 
+	average no. of words: 1.82609
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_TAGA/ANALYSIS/human_eng
+	num lines: 9149
+	avg nwords per line: 18.9414 
+	avg num lines per doc: 24.2679
+	num docs: 377
+	avg nwords per doc: 459.668 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_TAGA/ANALYSIS/src
+	num lines: 9149
+	avg nwords per line: 18.6626 
+	avg num lines per doc: 24.2679
+	num docs: 377
+	avg nwords per doc: 452.902 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_TAGA/ANALYSIS/mt1_eng
+	num lines: 5525
+	avg nwords per line: 36.0851 
+	avg num lines per doc: 14.6552
+	num docs: 377
+	avg nwords per doc: 528.833 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_TAGA/ANALYSIS/mt2_eng
+	num lines: 9149
+	avg nwords per line: 18.5456 
+	avg num lines per doc: 24.2679
+	num docs: 377
+	avg nwords per doc: 450.064 
+
+=== rel ===
+	num of unique queries: 483
+	num of unique docs: 377
+	avg num of docs per query: 2.31263
+	avg num of query per doc: 2.96286
+
+SWAH - STAGE1: Calculating Statistics:
+
+=== Queries === 
+	no. of unique SWAH queryIDs: 595, unique text: 591 
+	average no. of words: 1.75294
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SWAH/ANALYSIS/human_eng
+	num lines: 7515
+	avg nwords per line: 24.7939 
+	avg num lines per doc: 20.7025
+	num docs: 363
+	avg nwords per doc: 513.295 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SWAH/ANALYSIS/src
+	num lines: 7515
+	avg nwords per line: 20.7454 
+	avg num lines per doc: 20.7025
+	num docs: 363
+	avg nwords per doc: 429.482 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SWAH/ANALYSIS/mt1_eng
+	num lines: 5448
+	avg nwords per line: 36.6388 
+	avg num lines per doc: 15.0083
+	num docs: 363
+	avg nwords per doc: 549.884 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SWAH/ANALYSIS/mt2_eng
+	num lines: 7515
+	avg nwords per line: 24.969 
+	avg num lines per doc: 20.7025
+	num docs: 363
+	avg nwords per doc: 516.92 
+
+=== rel ===
+	num of unique queries: 595
+	num of unique docs: 363
+	avg num of docs per query: 2.08235
+	avg num of query per doc: 3.41322
+
+SOMA - STAGE1: Calculating Statistics:
+
+=== Queries === 
+	no. of unique SOMA queryIDs: 697, unique text: 689 
+	average no. of words: 1.5495
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SOMA/ANALYSIS/human_eng
+	num lines: 5015
+	avg nwords per line: 26.2201 
+	avg num lines per doc: 13.2672
+	num docs: 378
+	avg nwords per doc: 347.868 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SOMA/ANALYSIS/src
+	num lines: 5015
+	avg nwords per line: 25.9613 
+	avg num lines per doc: 13.2672
+	num docs: 378
+	avg nwords per doc: 344.434 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SOMA/ANALYSIS/mt1_eng
+	num lines: 4091
+	avg nwords per line: 36.9628 
+	avg num lines per doc: 10.8228
+	num docs: 378
+	avg nwords per doc: 400.04 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SOMA/ANALYSIS/mt2_eng
+	num lines: 5015
+	avg nwords per line: 26.9424 
+	avg num lines per doc: 13.2672
+	num docs: 378
+	avg nwords per doc: 357.45 
+
+=== rel ===
+	num of unique queries: 697
+	num of unique docs: 378
+	avg num of docs per query: 2.42755
+	avg num of query per doc: 4.47619

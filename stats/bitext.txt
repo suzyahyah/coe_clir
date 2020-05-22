@@ -1,0 +1,24 @@
+
+=== Docs ===
+from: /home/hltcoe/ssia/parallel_corpora/split/DOCS_german/build-bitext/src
+	num lines: 512992
+	avg nwords per line: 16.0874 
+	avg num lines per doc: 55.4107
+	num docs: 9258
+	avg nwords per doc: 891.414 
+
+=== Docs ===
+from: /home/hltcoe/ssia/parallel_corpora/split/DOCS_chinese/build-bitext/src
+	num lines: 544398
+	avg nwords per line: 1.51751 
+	avg num lines per doc: 55.7328
+	num docs: 9768
+	avg nwords per doc: 84.5749 
+
+=== Docs ===
+from: /home/hltcoe/ssia/parallel_corpora/split/DOCS_russian/build-bitext/src
+	num lines: 455004
+	avg nwords per line: 14.8051 
+	avg num lines per doc: 54.866
+	num docs: 8293
+	avg nwords per doc: 812.299 

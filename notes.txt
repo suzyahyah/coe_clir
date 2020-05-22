@@ -1,0 +1,29 @@
+CLEF
+  [Done] Train Topic Models for German
+  Process Src Docs to TM format for German
+  Run Topic Model evaluation for Russian
+  Process Russian 2004
+  Write Sanity Checks to see if Translated Docs and Source Docs
+  Check why my russian qrel files are getting deleted
+  Document how I do sentence tokenization for other languages
+
+TREC
+  Document how I do sentence tokenization for Chinese
+  Topic Modeling for Chinese
+
+BITEXT
+  Rename parallel_corpora to comparable_corpora
+  Write asserts that comparable corpora have the same number of documents
+
+MATERIAL
+  Check that stuff runs with all the PY function changes and shell
+
+General
+  Migrate to /exp/
+  Fix error messages for topic modeling
+  Write general sanity checks to see what documents are available.
+  Figure out if I need the .tmp naming for translation
+  Write code to combine src and translated files for trec and CLEF across years.
+  Write warnings/caveats for translate.
+  Fix Heading for document extraction
+  Fix up plot of MAP

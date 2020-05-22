@@ -13,7 +13,7 @@ reset=0 # copies all directories
 merge=0
 baseline=0
 
-processd=()
+processd=(query)
 
 DIR0003_org=/home/hltcoe/kduh/data/ir/clef00-03
 DIR0304_org=/home/hltcoe/kduh/data/ir/clef03-04
@@ -94,11 +94,11 @@ if [ $sstage -le 0 ] && [ $estage -ge 0 ]; then
   fi
 
   if [[ "${processd[@]}" =~ "rel" ]]; then
-    [ -d $DIR0003/RelAssess ] && rm -r $DIR0003/RelAssess
-    cp -r $DIR0003_org/RelAssess $DIR0003
+    #[ -d $DIR0003/RelAssess ] && rm -r $DIR0003/RelAssess
+    #cp -r $DIR0003_org/RelAssess $DIR0003
 
-    mv $RELS/2000rels/biling_qrels $RELS/2000rels/qrels_english
-    mv $RELS/2001rels/qrels_bilingual $RELS/2001rels/qrels_english
+    #mv $RELS/2000rels/biling_qrels $RELS/2000rels/qrels_english
+    #mv $RELS/2001rels/qrels_bilingual $RELS/2001rels/qrels_english
     
     for lang in "${!L[@]}"; do
       mv $RELS/2000rels/${lang}_qrels $RELS/2000rels/qrels_${lang}
@@ -218,14 +218,14 @@ for lang in "${!L[@]}"; do
       relf=$RELS/all_yrs/qrels_${lang}.txt
       query1=$QUERIES/QUERY_english/query_all.txt
       query2=$QUERIES/QUERY_english/query_title.txt
-      fild=${L[$lang]}/all_docs_en
+      fild=${L[$lang]}/all_docs
 #      rm_mk $fild
 
       [ ! -f $relf ] && echo "Generate $relf first" && exit 1
-      [ ! -d $fild.tmp ] && echo "Generate $fild.tmp first" && exit 1
+      [ ! -d $fild ] && echo "Generate $fild first" && exit 1
 
-      python src/merge_keys.py "$relf" "$query1" "$fild.tmp" $lang
-      python src/merge_keys.py "$relf" "$query2" "$fild.tmp" $lang
+      python src/merge_keys.py "$relf" "$query1" "$fild" $lang
+      python src/merge_keys.py "$relf" "$query2" "$fild" $lang
 
       # Prepare trec format
       [[ -f $relf.trec ]] && rm $relf.trec
@@ -320,7 +320,7 @@ for lang in "${!L[@]}"; do
 #      for k in 10 20; do
       for k in 10 20 50 100 200 300 400; do
         bash ./bin/runPolyTM.sh train $BITEXTD $lang $k $TESTD $QUERYF
-        bash ./bin/runPolyTM.sh infer $BITEXTD $lang $k $TESTD $QUERYF
+        bash ./bin/runPolyTM.sh infer $BITEXTD $lang $k $TESTD $QUERYF 
       done
     done
   fi 

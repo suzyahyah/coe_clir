@@ -1,49 +1,74 @@
 #!/usr/bin/env bash
 # Author: Suzanna Sia
 
-MALLETDIR=/home/ssia/packages/Mallet
+#MALLETDIR=/home/ssia/packages/Mallet
+MALLETDIR=Mallet
 SAVEDIR=malletfiles
-NTOPICS=$2
 
-SRC_TrainD=temp/DOCS_$1/build-bitext/src_proc_tm
-SRC_TrainF=$SAVEDIR/$1/src_format.train
 
-eng_TrainD=temp/DOCS_$1/build-bitext/eng_proc_tm
-eng_TrainF=$SAVEDIR/$1/eng_format.train
+BITEXTDIR=$2
+LANG=$3
+NTOPICS=$4
+TESTDIR=$5
+QUERYF=$6
 
-SRC_TestD=temp/DOCS_$1/ANALYSIS/src_proc_tm
-SRC_TestF=$SAVEDIR/$1/src_format.test
-SRC_TestTopics=$SAVEDIR/$1/SrcTopics.txt.$2
+[[ ! -d $MALLETDIR ]] && "Install Mallet first" && exit 1
+mkdir -p $SAVEDIR/$LANG
 
-Query=temp/QUERY_$1/q.txt.qp.tm
-QueryF=$SAVEDIR/$1/query_format.test
-QueryTopics=$SAVEDIR/$1/QueryTopics.txt.$2
+#SRC_TrainD=temp/DOCS_$1/build-bitext/src_tm
+SRC_TrainD=$BITEXTDIR/src_tm
+SRC_TrainF=$SAVEDIR/$LANG/src_format.train
 
-Inferencer=$SAVEDIR/$1/topic-inferencer
-TopicModel=$SAVEDIR/$1/topic-model
+eng_TrainD=$BITEXTDIR/eng_tm
+eng_TrainF=$SAVEDIR/$LANG/eng_format.train
 
-TopicWords=$SAVEDIR/$1/TopicWords.txt
+SRC_TestD=${TESTDIR}_tm
+SRC_TestF=$SAVEDIR/$LANG/src_format.test
+SRC_TestTopics=$SAVEDIR/$LANG/SrcTopics.txt.$NTOPICS
 
-mkdir -p $SAVEDIR/$1
+Query=$QUERYF
+QB=`basename $Query`
+QueryF=$SAVEDIR/$LANG/$QB.test
+QueryTopics=$SAVEDIR/$LANG/QueryTopics.txt.$NTOPICS
 
-LANG=$1
-NTOPICS=$2
+Inferencer=$SAVEDIR/$LANG/topic-inferencer
+TopicModel=$SAVEDIR/$LANG/topic-model
 
-echo "Format Query and Target to mallet.."
-$MALLETDIR/bin/mallet import-dir --input $SRC_TrainD --output $SRC_TrainF --keep-sequence --remove-stopwords
-$MALLETDIR/bin/mallet import-dir --use-pipe-from $SRC_TrainF --input $SRC_TestD --output $SRC_TestF --keep-sequence --remove-stopwords
-$MALLETDIR/bin/mallet import-dir --input $eng_TrainD --output $eng_TrainF --keep-sequence --remove-stopwords
-$MALLETDIR/bin/mallet import-file --use-pipe-from $eng_TrainF --input $Query --output $QueryF --keep-sequence --remove-stopwords
+TopicWords=$SAVEDIR/$LANG/TopicWords.txt
 
-echo "Running Polylingual Topic Model.."
+if [[ "$1" == "train" ]]; then
+  echo "Training Polylingual Topic Model.."
+  $MALLETDIR/bin/mallet import-dir --input $SRC_TrainD --output $SRC_TrainF --keep-sequence
+  $MALLETDIR/bin/mallet import-dir --input $eng_TrainD --output $eng_TrainF --keep-sequence 
+  $MALLETDIR/bin/mallet run cc.mallet.topics.PolylingualTopicModel --language-inputs $SRC_TrainF $eng_TrainF --num-topics $NTOPICS --alpha 1.0 --inferencer-filename $Inferencer.k$NTOPICS
+fi
 
-$MALLETDIR/bin/mallet run cc.mallet.topics.PolylingualTopicModel --language-inputs $SRC_TrainF $eng_TrainF --num-topics $NTOPICS --alpha 1.0 --inferencer-filename $Inferencer
+if [[ "$1" == "infer" ]]; then
+  echo "Infer topics from query and Src Test docs"
+  $MALLETDIR/bin/mallet import-dir --use-pipe-from $SRC_TrainF --input $SRC_TestD --output $SRC_TestF --keep-sequence 
+  $MALLETDIR/bin/mallet import-file --use-pipe-from $eng_TrainF --input $Query --output $QueryF --keep-sequence
+  $MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer.k$NTOPICS.0 --input $SRC_TestF --output-doc-topics $SRC_TestTopics
+  $MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer.k$NTOPICS.1 --input $QueryF --output-doc-topics $QueryTopics
+fi
 
-echo "Infer topics from query and Src Test docs"
-$MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer.0 --input $SRC_TestF --output-doc-topics $SRC_TestTopics
+#echo "Format Query and Target to mallet.."
 
-$MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer.1 --input $QueryF --output-doc-topics $QueryTopics
+#[[ ! -f $SRC_TrainF ]] && $MALLETDIR/bin/mallet import-dir --input $SRC_TrainD --output $SRC_TrainF --keep-sequence
+#[[ ! -f $SRC_TestF ]] && $MALLETDIR/bin/mallet import-dir --use-pipe-from $SRC_TrainF --input $SRC_TestD --output $SRC_TestF --keep-sequence 
 
+#[[ ! -f $eng_TrainF ]] && $MALLETDIR/bin/mallet import-dir --input $eng_TrainD --output $eng_TrainF --keep-sequence 
+
+#[[ ! -f $QueryF ]] && $MALLETDIR/bin/mallet import-file --use-pipe-from $eng_TrainF --input $Query --output $QueryF --keep-sequence
+
+#[[ ! -f $Inferencer.k$NTOPICS.0 ]] && $MALLETDIR/bin/mallet run cc.mallet.topics.PolylingualTopicModel --language-inputs $SRC_TrainF $eng_TrainF --num-topics $NTOPICS --alpha 1.0 --inferencer-filename $Inferencer.k$NTOPICS
+
+#echo "Infer topics from query and Src Test docs"
+#[[ ! -f $SRC_TestTopics ]] && $MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer.k$NTOPICS.0 --input $SRC_TestF --output-doc-topics $SRC_TestTopics
+
+#$MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer.k$NTOPICS.1 --input $QueryF --output-doc-topics $QueryTopics
+
+
+# Deprecate
 #echo "Infer top words from topic.."
 #$MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer --input $QueryF --output-topic-keys $TopicWords
 

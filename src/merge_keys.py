@@ -43,7 +43,7 @@ def init():
     doc_fold = sys.argv[3]
 
     if len(sys.argv)==5:
-        suffix = sys.argv[4]
+        suffix = "_"+sys.argv[4]
     else:
         suffix=""
 
@@ -65,8 +65,14 @@ def init():
 
     # write to file
     # clean up names
-    rel_new.to_csv(rel_f[:rel_f.find('.')]+".txt", index=False, header=False, sep="\t")
-    q_new.to_csv(query_f[:query_f.find('.')]+"_"+suffix+".txt", index=False, header=False, sep="\t")
+    relfn = rel_f[:rel_f.find('.')] + ".txt"
+    qfn = query_f[:query_f.find('.')] + suffix +".txt"
+
+    rel_new.to_csv(relfn, index=False, header=False, sep="\t")
+    q_new.to_csv(qfn, index=False, header=False, sep="\t")
+
+    print("New queries written to:", qfn)
+    print("New relfiles written to:", relfn)
 #
 #    # copy relevant documents over to new folder
 #    #new_folder = doc_fold[:doc_fold.find('.')]

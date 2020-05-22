@@ -7,26 +7,38 @@ source ./bin/utils.sh
 declare -A L
 NEWSC=/home/hltcoe/ssia/parallel_corpora/split
 
+sstage=1
+estage=1
+
 L=(
-['english']=${NEWSC}/en
+#['english']=${NEWSC}/en
 #['french']=${NEWSC}/fr
 ['german']=${NEWSC}/de
-#['russian']=${NEWSC}/ru
+['russian']=${NEWSC}/ru
+['chinese']=${NEWSC}/zh
 )
 
 # Find all matching names
 for lang in "${!L[@]}"; do
 
-  if [[ $lang != "english" ]]; then
-    rm_mk $NEWSC/DOCS_$lang/build-bitext/src
-    rm_mk $NEWSC/DOCS_$lang/build-bitext/eng
+  if [ $sstage -le 0 ] && [ $estage -ge 0 ]; then
+      
+    if [[ $lang != "english" ]]; then
+      rm_mk $NEWSC/DOCS_$lang/build-bitext/src
+      rm_mk $NEWSC/DOCS_$lang/build-bitext/eng
 
-    fns=`comm -12 <(ls ${L[english]}) <(ls ${L[$lang]})`
-    echo "Building bitext for $lang .." 
-    for fn in $fns; do
-      cp ${L[english]}/$fn $NEWSC/DOCS_$lang/build-bitext/src/$fn
-      cp ${L[$lang]}/$fn $NEWSC/DOCS_$lang/build-bitext/eng/$fn
-    done
-    echo "done"
+      fns=`comm -12 <(ls ${L[english]}) <(ls ${L[$lang]})`
+      echo "Building bitext for $lang .." 
+      for fn in $fns; do
+        cp ${L[english]}/$fn $NEWSC/DOCS_$lang/build-bitext/eng/$fn
+        cp ${L[$lang]}/$fn $NEWSC/DOCS_$lang/build-bitext/src/$fn
+      done
+      echo "done"
+
+    fi
+  fi
+
+  if [ $sstage -le 1 ] && [ $estage -ge 1 ]; then
+    doc_stats $NEWSC/DOCS_$lang/build-bitext/src
   fi
 done

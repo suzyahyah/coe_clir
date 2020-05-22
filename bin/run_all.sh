@@ -63,9 +63,37 @@ EOF
 }
 
 
+trec_map() {
+
+  relf=$1
+  resf=$2
+  topics=$3
+  writef=$4
+  lang=$5
+  system=$6
+
+  score=$(./trec_eval/trec_eval -m map $relf.trec $resf | awk '{print $3}') || exit 1
+  printf "$lang\t$system\t$topics\t$score\n" >> $writef
+  echo "MAP Results written to $writef"
+
+  #MAP score for each query
+  ./trec_eval/trec_eval -q $relf.trec $resf | grep "map\s*query\s*" | awk '{print $2" "$3}' > $writef.each
+  printf "MAP for each Query written to: $writef.each \n"
+
+}
+
+
 index_query_doc() {
+
+    qfn=$1
+    tfn=$2
+    relf=$3
+    resf=$4
+    mode=$5
+
     printf "\n$1 - STAGE5: Index and Query $2 Trans Docs:\n"
-    python src/main.py --lang $1 --mode doc --system $2 --dims 0
+    python src/main.py --mode $mode --dims 0 \
+                      --query_fn $qfn --target_fn $tfn --resf $resf
 
     score=$(./trec_eval/trec_eval -m map data/IRrels_$1/rels.txt.trec \
       results/ranking_$1.txt.$2 | awk '{print $3}') || exit 1
@@ -291,9 +319,13 @@ for lang in "${!L[@]}"; do
 
   if [ $sstage -le 3 ] && [ $estage -ge 3 ]; then
     printf "\n$lang - STAGE3: train topic model:\n"
+    BITEXTD=temp/DOCS_$lang/build-bitext
+    TESTD=temp/DOCS_$lang/ANALYSIS/src
+    QUERYF=temp/QUERY_$lang/q.txt.qp.tm
     #for k in 10 20 50 100 200 300 400 500; do
     for k in 600 700; do
-      bash ./bin/runPolyTM.sh $lang $k
+      #bash ./bin/runPolyTM.sh $lang $k
+      bash ./bin/runPolyTM.sh $BITEXTD $TESTD $QUERYF $lang $k
     done
   fi
 

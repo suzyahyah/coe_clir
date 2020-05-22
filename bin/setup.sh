@@ -6,6 +6,12 @@ shasum -a 512 -c elasticsearch-$VERSION-linux-x86_64.tar.gz.sha512
 tar -xzf elasticsearch-$VERSION-linux-x86_64.tar.gz
 rm elasticsearch*tar.gz*
 
+## Get Treceval
+git clone https://github.com/usnistgov/trec_eval.git
+cd trec_eval
+make
+
+
 ## Get MAllET
 git clone https://github.com/mimno/Mallet.git
 cd Mallet && ant
@@ -20,8 +26,17 @@ assets/stopwords_TAGA.txt
 wget https://raw.githubusercontent.com/stopwords-iso/stopwords-sw/master/stopwords-sw.txt -O \
 assets/stopwords_SWAH.txt
 
-# CLEF 
-https://raw.githubusercontent.com/stopwords-iso/stopwords-de/master/stopwords-de.txt
+# German, Russian stopwords (for CLEF)
+wget https://raw.githubusercontent.com/stopwords-iso/stopwords-de/master/stopwords-de.txt -O \
+  assets/stopwords_german.txt
+wget https://raw.githubusercontent.com/stopwords-iso/stopwords-ru/master/stopwords-ru.txt -O \
+  assets/stopwords_russian.txt
+
+# Chinese, Arabic stopwords (for Trec)
+wget https://raw.githubusercontent.com/stopwords-iso/stopwords-zh/master/stopwords-zh.txt -O \
+  assets/stopwords_chinese.txt
+wget https://raw.githubusercontent.com/stopwords-iso/stopwords-ar/master/stopwords-ar.txt -O \
+  assets/stopwords_arabic.txt
 
 # install fairseq
 pip install fairseq

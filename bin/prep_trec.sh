@@ -8,12 +8,12 @@ source ./bin/utils.sh
 
 sstage=0
 estage=0
-translate=0
+translate=1
 reset=0 # copies all directories
 merge=0
 baseline=0
 
-processd=(rel)
+processd=()
 
 TRECDIR_org=/home/hltcoe/kduh/data/ir/trec/
 TRECDIR=/home/hltcoe/ssia/trec
@@ -80,7 +80,33 @@ for lang in "${!L[@]}"; do
     
     if [[ "${processd[@]}" =~ "doc" ]]; then
       # extract untar documents
-      #
+      #for subdir in `ls -I "*_txt*" ${L[$lang]}/trec{9,s56}/docs`; do
+      #for subdir in `ls -I "*_txt*" ${L[$lang]}/trecs56/docs`; do
+
+      for subdir in `ls -d ${L[$lang]}/trec{9,s56}/docs/* | grep -v '_txt'`; do
+        #echo "Untaring $subdir"
+        ls $subdir/*.gz | xargs -n1 -I % gunzip % 
+        ls $subdir | grep -v "*.sgml" | xargs -n1 -I % mv % %.sgml
+       
+        #rm_mk ${subdir}_txt
+        for fil in `ls $subdir/*.sgml`; do
+          conv_encoding $fil
+          python src/docparser.py doc $fil ${subdir}_txt
+        done
+      done
+    fi
+    # Translate Target Language (German, French, Russian) to English
+      # For this we use pre-trained fairseq
+      # Note this requires rtx gpus on COE-Grid
+    if [[ $translate -eq 1 ]]; then
+      for fild in `ls -d ${L[$lang]}/trec{9,s56}/docs/* | grep "_txt$"`; do
+        rm_mk ${fild}_en.tmp
+      #for $fild in `ls -d ${L[$lang]}/trec56s/docs/* | grep "_txt$"`; do
+      #  mkdir -p ${fild}_en.tmp
+        echo "Translating $lang.. $fild"
+        python src/translate.py $lang $fild
+      done
+      #python src/translate.py $lang ${L[$lang]}/trecs56/docs/peoples-daily_txt
     fi
   fi
 done

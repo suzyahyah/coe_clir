@@ -81,13 +81,14 @@ conv_lang() {
   [[ "$1" == "italian" ]] && lang="IT";
   [[ "$1" == "russian" ]] && lang="RU";
   [[ "$1" == "swedish" ]] && lang="SV";
+  [[ "$1" == "dutch" ]] && lang="NL";
 
   [[ "$2" == "lower" ]] && lang=`echo $lang | awk '{print tolower($0)}'`
   echo "$lang"
 }
 
 conv_encoding() {
-  # check if utf-8, else convert
+  # This function checks for the encoding, and converts it to utf-8.
   fil=$1
   encoding=`file -b --mime-encoding $fil`
 
@@ -95,7 +96,7 @@ conv_encoding() {
     [[ $encoding == "us-ascii" ]] && encoding="US-ASCII"
     [[ $encoding == "utf-16le" ]] && encoding="UTF-16LE"
 
-    #echo "$encoding > utf-8 $fil"
+    echo "$encoding > utf-8 $fil"
     iconv -f ${encoding} -t UTF-8 $fil > ${fil}.t
 
     if [ $? -eq 0 ]; then
@@ -125,7 +126,7 @@ trec_map() {
   echo "MAP Results written to $writef"
 
   #MAP score for each query
-  ./trec_eval/trec_eval -q $relf.trec $resf | grep "map\s*query\s*" | awk '{print $2" "$3}' > $writef.each
-  printf "MAP for each Query written to: $writef.each \n"
+  ./trec_eval/trec_eval -q $relf.trec $resf | grep "map\s*query\s*" | awk '{print $2" "$3}' > $writef.each.$topics
+  printf "MAP for each Query written to: $writef.each.$ntopics \n"
 
 }

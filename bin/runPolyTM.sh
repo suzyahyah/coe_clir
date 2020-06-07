@@ -11,30 +11,30 @@ LANG=$3
 NTOPICS=$4
 TESTDIR=$5
 QUERYF=$6
+QTYPE=$7
 
 [[ ! -d $MALLETDIR ]] && "Install Mallet first" && exit 1
 mkdir -p $SAVEDIR/$LANG
 
-#SRC_TrainD=temp/DOCS_$1/build-bitext/src_tm
+### Used both during training and inference
 SRC_TrainD=$BITEXTDIR/src_tm
 SRC_TrainF=$SAVEDIR/$LANG/src_format.train
 
 eng_TrainD=$BITEXTDIR/eng_tm
 eng_TrainF=$SAVEDIR/$LANG/eng_format.train
 
-SRC_TestD=${TESTDIR}_tm
-SRC_TestF=$SAVEDIR/$LANG/src_format.test
-SRC_TestTopics=$SAVEDIR/$LANG/SrcTopics.txt.$NTOPICS
-
-Query=$QUERYF
-QB=`basename $Query`
-QueryF=$SAVEDIR/$LANG/$QB.test
-QueryTopics=$SAVEDIR/$LANG/QueryTopics.txt.$NTOPICS
-
 Inferencer=$SAVEDIR/$LANG/topic-inferencer
 TopicModel=$SAVEDIR/$LANG/topic-model
 
-TopicWords=$SAVEDIR/$LANG/TopicWords.txt
+
+### Used only in Inference
+Query=$QUERYF
+QB=`basename $Query`
+QueryF=$SAVEDIR/$LANG/$QB.test
+QueryTopics=$SAVEDIR/$LANG/query_$QTYPE.$NTOPICS
+SRC_TestD=${TESTDIR}_tm
+SRC_TestF=$SAVEDIR/$LANG/src_format.test
+SRC_TestTopics=$SAVEDIR/$LANG/SrcTopics.$NTOPICS
 
 if [[ "$1" == "train" ]]; then
   echo "Training Polylingual Topic Model.."
@@ -44,11 +44,15 @@ if [[ "$1" == "train" ]]; then
 fi
 
 if [[ "$1" == "infer" ]]; then
-  echo "Infer topics from query and Src Test docs"
-  $MALLETDIR/bin/mallet import-dir --use-pipe-from $SRC_TrainF --input $SRC_TestD --output $SRC_TestF --keep-sequence 
-  $MALLETDIR/bin/mallet import-file --use-pipe-from $eng_TrainF --input $Query --output $QueryF --keep-sequence
-  $MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer.k$NTOPICS.0 --input $SRC_TestF --output-doc-topics $SRC_TestTopics
-  $MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer.k$NTOPICS.1 --input $QueryF --output-doc-topics $QueryTopics
+  [[ ! -f $Inferencer.k$NTOPICS.0 ]] && echo "Error: Train topic model first." && exit 1
+
+  [[ ! -f $SRC_TestF ]] && $MALLETDIR/bin/mallet import-dir --use-pipe-from $SRC_TrainF --input $SRC_TestD --output $SRC_TestF --keep-sequence 
+
+  [[ ! -f $QueryF ]] && $MALLETDIR/bin/mallet import-file --use-pipe-from $eng_TrainF --input $Query --output $QueryF --keep-sequence
+
+  [[ ! -f $SRC_TestTopics ]] && echo "Infering $NTOPICS topics for $SRC_TestTopics" && $MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer.k$NTOPICS.0 --input $SRC_TestF --output-doc-topics $SRC_TestTopics
+
+  [[ ! -f $QueryTopics ]] && echo "Infering $NTOPICS topics for $QueryTopics" && $MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer.k$NTOPICS.1 --input $QueryF --output-doc-topics $QueryTopics
 fi
 
 #echo "Format Query and Target to mallet.."
@@ -71,6 +75,3 @@ fi
 # Deprecate
 #echo "Infer top words from topic.."
 #$MALLETDIR/bin/mallet infer-topics --inferencer $Inferencer --input $QueryF --output-topic-keys $TopicWords
-
-
-echo "done"

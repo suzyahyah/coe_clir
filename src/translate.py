@@ -32,7 +32,7 @@ import re
 
 lang = sys.argv[1]
 fild = sys.argv[2]
-newd = fild+"_en.tmp"
+newd = fild+"_en"
 
 #os.mkdir(fild+"_en")
 

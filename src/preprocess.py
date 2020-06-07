@@ -39,15 +39,12 @@ class Pipeline():
     def strip_clean(self, text, stopwords=False):
 
         text = (text.translate(self.strip_punct).translate(self.strip_digit)).lower()
+        text = [w.strip() for w in text.split() if len(w)>3]
+
         if stopwords:
-            text = [word for word in text.split() if word.strip() not in self.stopwords]
-        else:
-            text = [word for word in text.split()]
+            text = [w for w in text if w not in self.stopwords]
 
         text = " ".join(text)
-        #text = re.sub(r'\s(hyp|syn|evf)\s', ' ', text)
-        #text = text.replace("EXAMPLE OF", "")
-
         return text
 
     def remove_stopwords(text, self):
@@ -114,7 +111,7 @@ if __name__=="__main__":
                 f.write("\n".join(queries)+"\n")
 
 
-    if "doc" in args.mode:
+    if "bm25" in args.mode:
         #mode, system = args.mode.split('_')
         if args.fn:
             with open(args.fn, 'r') as f:
@@ -123,7 +120,7 @@ if __name__=="__main__":
             queries = [q.strip().lower().split() for q in queries]
             queries = [q[0]+"\t" + pipe.strip_clean(" ".join(q[1:]), stopwords=False) for q in queries]
 
-            with open(args.fn+".doc", 'w') as f:
+            with open(f"{args.fn}.{args.mode}", 'w') as f:
                 f.write("\n".join(queries)+"\n")
 
         elif args.docdir:

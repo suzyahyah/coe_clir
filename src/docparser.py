@@ -3,30 +3,23 @@
 # Adapted from Sun Shuo
 #
 ### Standard imports
-#import random
-#import numpy as np
 import pdb
-#import math
 import os
 import sys
 import re
-#import argparse
-
 ### Third Party imports
+from os import path
+from collections import defaultdict
+from bs4 import BeautifulSoup as bs
 
 ### Local/Custom imports
 
 # Comment out debugger before deployment
 from debugger import Debugger
 DB = Debugger()
-
 #from distutils.util import str2bool
 #argparser = argparser.ArgumentParser()
 #argparser.add_argument('--x', type=float, default=0)
-
-from os import path
-from collections import defaultdict
-from bs4 import BeautifulSoup as bs
 
 def extract_queries(sgml_file, write_dir, year="", dformat=""):
     
@@ -76,16 +69,19 @@ def extract_queries(sgml_file, write_dir, year="", dformat=""):
         queries_all.append(qid+"\t"+alltext)
         queries_title.append(qid+"\t"+title)
 
-    print(f"{len(queries_all)} queries written to {write_dir}")
+    q_allfp = os.path.join(write_dir, f'query{year}_all.txt')
+    q_titlefp = os.path.join(write_dir, f'query{year}_title.txt')
 
     queries_all = "\n".join(queries_all)
-    with open(os.path.join(write_dir, f'query{year}_all.txt'), 'w') as f:
+    with open(q_allfp, 'w') as f:
         f.write(queries_all + "\n")
     
     queries_title = "\n".join(queries_title)
-    with open(os.path.join(write_dir, f'query{year}_title.txt'), 'w') as f:
+    with open(q_titlefp, 'w') as f:
         f.write(queries_title + "\n")
  
+    print(f"{len(queries_all)} queries written to {q_allfp}")
+    print(f"{len(queries_title)} queries written to {q_titlefp}")
 
 def parse_write_sgml(sgml_file, write_dir):
     """Method used to parse sgml files
@@ -97,8 +93,6 @@ def parse_write_sgml(sgml_file, write_dir):
         Exception: if unable to read tsv file
 
     """
-    #with open(rel_fn, 'r') as f:
-    #    rels = f.readlines()
     
     docd = {}
     with open(sgml_file) as f:
@@ -122,6 +116,7 @@ def parse_write_sgml(sgml_file, write_dir):
     fmt['docno'] = 'docno'
     fmt['text'] = 'text'
     fmt['text2'] = 'tx'
+    fmt['text3'] = "body"
     fmt['stripdocno'] = "<docno>|</docno>"
     fmt['striptext'] = "<text>|</text>"
 
@@ -136,20 +131,22 @@ def parse_write_sgml(sgml_file, write_dir):
         assert len(docnos)==1
         docno = re.sub(fmt['stripdocno'], "", str(docnos[0])).strip()
 
-        towrite = []
-
         # Different file formatting
+        # refactor this ugly thing
         texts = doc.find_all(fmt['text'])
         if len(texts)==0:
             texts = doc.find_all(fmt['text2'])
+            if len(texts) == 0:
+                texts = doc.find_all(fmt['text3'])
+        if len(texts)==0:
+            print("Warning: no text found in ", sgml_file)
 
-        for text in texts:
-            text = text.contents[0]
-            #text = re.sub(fmt['striptext'], "", str(text))
-            text = " ".join(text.split())
-            towrite.append(text.strip())
-        
+
+        #for text in texts:
+            #towrite.append(text.text.strip())
+        towrite = [t.text.strip() for t in texts]
         towrite = "\n".join(towrite).strip()
+
         if len(towrite)==0:
             continue
         else:
@@ -161,7 +158,6 @@ def parse_write_sgml(sgml_file, write_dir):
             write_file = os.path.join(write_dir, docno) + ".txt"
             with open(write_file, 'w', encoding='utf-8') as f:
                 f.write(docd[docno]+"\n")
-        #DB.dp(xcl=['soup', 'doc'])
             
         print(f"wrote {len(docd.keys())} files to folder {write_dir}")
 

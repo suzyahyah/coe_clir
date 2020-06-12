@@ -26,9 +26,7 @@ http://data.statmt.org/news-commentary/v14/
 
 #### Run Pipeline in Stages
 
-`bash ./bin/run_all.sh` 
-
-Process Documents for: Bitext, ANALYSIS, MT1, MT2, Query
+`bash ./bin/prep_{material,clef,trec}.sh` 
 
 * Stage 0: Make Directories and Prepare Data
 

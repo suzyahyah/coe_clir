@@ -1,5 +1,7 @@
 CLEF
+  [Done] German Translation not right; der_spiegel
   [Done] Train Topic Models for German
+  Do merge for German
   Process Src Docs to TM format for German
   Run Topic Model evaluation for Russian
   Process Russian 2004

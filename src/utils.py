@@ -41,6 +41,7 @@ def queries_to_json(queries_doc_fn, strip=False):
     with open(queries_doc_fn, 'r') as f:
         queries = f.readlines()
         queries = [q.strip().split('\t') for q in queries]
+
     if strip:
         queries = [{'docid':q[0], 'doc_text': pipe.strip_clean(q[1])} for q in queries]
     else:

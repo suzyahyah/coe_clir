@@ -1,0 +1,31 @@
+
+german - STAGE2: Calculating Statistics
+=== Queries === /home/hltcoe/ssia/clef00-03/Topics/QUERY_english/query_all_german.txt
+	no. of unique german queryIDs: 184, unique text: 184 
+	average no. of words: 51.7663
+
+=== Queries === /home/hltcoe/ssia/clef00-03/Topics/QUERY_english/query_title_german.txt
+	no. of unique german queryIDs: 184, unique text: 184 
+	average no. of words: 3.44565
+
+=== Docs ===
+from: /home/hltcoe/ssia/clef00-03/DocumentData/DataCollections/German_data/all_docs_en
+	num lines: 3726816
+	avg nwords per line: 17.0575 
+	avg num lines per doc: 13.1568
+	num docs: 283262
+	avg nwords per doc: 224.421 
+
+=== Docs ===
+from: /home/hltcoe/ssia/clef00-03/DocumentData/DataCollections/German_data/all_docs_src
+	num lines: 1968846
+	avg nwords per line: 37.8444 
+	avg num lines per doc: 6.95062
+	num docs: 283262
+	avg nwords per doc: 263.042 
+
+=== rel ===
+	num of unique queries: 184
+	num of unique docs: 3326
+	avg num of docs per query: 18.8261
+	avg num of query per doc: 1.04149

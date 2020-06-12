@@ -50,7 +50,6 @@ wget https://dl.fbaipublicfiles.com/fairseq/models/wmt19.de-en.joined-dict.ensem
 wget https://dl.fbaipublicfiles.com/fairseq/models/wmt19.ru-en.ensemble.tar.gz
 
 
-
 # get parallel data 
 PARALLELDIR=/home/hltcoe/ssia/parallel_corpora
 mkdir -p $PARALLELDIR

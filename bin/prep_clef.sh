@@ -21,7 +21,7 @@ reset=0 # if 1, remove and copy all directories. We rarely want to do this.
 baseline=0
 query_english_only=1 # if 0, extracts other language queries.
 
-processd=(query doc)
+processd=(doc)
 
 # Original Data Directory
 DIR0003_org=/home/hltcoe/kduh/data/ir/clef00-03
@@ -38,20 +38,21 @@ RELS=$DIR0003/RelAssess
 QUERIES=$DIR0003/Topics
 BITEXT=/home/hltcoe/ssia/parallel_corpora/split
 
-declare -A Q=(
-['dutch']=Top-nl
-['english']=Top-en
-['finnish']=Top-fi
-['french']=Top-fr
-['german']=Top-de
-['italian']=Top-it
-['russian']=Top-ru
-['spanish']=Top-es
-['swedish']=Top-sv
-['chinese']=Top-zh
-['japanese']=Top-ja
-['portugese']=Top-pt
-)
+# Temp for Sun shuo
+#declare -A Q=(
+#['dutch']=Top-nl
+#['english']=Top-en
+#['finnish']=Top-fi
+#['french']=Top-fr
+#['german']=Top-de
+#['italian']=Top-it
+#['russian']=Top-ru
+#['spanish']=Top-es
+#['swedish']=Top-sv
+#['chinese']=Top-zh
+#['japanese']=Top-ja
+#['portugese']=Top-pt
+#)
 
 declare -A L=(
 #['amaryllis']=${DOCS}/Amaryllis_data
@@ -59,9 +60,9 @@ declare -A L=(
 #['english']=${DOCS}/English_data
 #['finnish']=${DOCS}/Finnish_data
 #['french']=${DOCS}/French_data
-#['german']=${DOCS}/German_data
+['german']=${DOCS}/German_data
 #['italian']=${DOCS}/Italian_data
-['russian']=${DOCS}/Russian_data
+#['russian']=${DOCS}/Russian_data
 #['spanish']=${DOCS}/Spanish_data
 #['swedish']=${DOCS}/Swedish_data
 )
@@ -81,12 +82,12 @@ declare -A L_org=(
 
 # removing and copy entire directories
 # we rarely want to do this cos it takes forever
-if [ $reset -eq 1 ]; then
-  [ -d $DIR0003 ] && rm -r $DIR0003
-  [ -d $DIR0304 ] && rm -r $DIR0304
-  cp -r $DIR0003_org $DIR0003
-  cp -r $DIR0304_org $DIR0304
-fi
+#if [ $reset -eq 1 ]; then
+#  [ -d $DIR0003 ] && rm -r $DIR0003
+#  [ -d $DIR0304 ] && rm -r $DIR0304
+#  cp -r $DIR0003_org $DIR0003
+#  cp -r $DIR0304_org $DIR0304
+#fi
 
 
 # Stage 0: Get Data
@@ -98,30 +99,38 @@ if [ $sstage -le 0 ] && [ $estage -ge 0 ]; then
 
   # Folder and file renaming for consistency    
   if [[ "${processd[@]}" =~ "query" ]]; then
-    [ -d $DIR0003/Topics ] && rm -r $DIR0003/Topics
-    cp -r $DIR0003_org/Topics $DIR0003
+    if [ $reset -eq 1 ]; then
+      [ -d $DIR0003/Topics ] && rm -r $DIR0003/Topics
+      cp -r $DIR0003_org/Topics $DIR0003
+    fi
 
     tfil=$DIR0003/Topics/topics2000
-    mv $tfil/TOP-G.txt $tfil/Top-de00.txt
-    mv $tfil/TOP-E.txt $tfil/Top-en00.txt
-    mv $tfil/TOP-SP.txt $tfil/Top-es00.txt
-    mv $tfil/TOP-FI.txt $tfil/Top-fi00.txt
-    mv $tfil/TOP-D.txt $tfil/Top-nl00.txt
-    mv $tfil/TOP-F.txt $tfil/Top-fr00.txt
-    mv $tfil/TOP-I.txt $tfil/Top-it00.txt
-    mv $tfil/TOP-SW.txt $tfil/Top-sv00.txt
+    cp $tfil/TOP-G.txt $tfil/Top-de00.txt
+    cp $tfil/TOP-E.txt $tfil/Top-en00.txt
+    cp $tfil/TOP-SP.txt $tfil/Top-es00.txt
+    cp $tfil/TOP-FI.txt $tfil/Top-fi00.txt
+    cp $tfil/TOP-D.txt $tfil/Top-nl00.txt
+    cp $tfil/TOP-F.txt $tfil/Top-fr00.txt
+    cp $tfil/TOP-I.txt $tfil/Top-it00.txt
+    cp $tfil/TOP-SW.txt $tfil/Top-sv00.txt
 
     tfil=$DIR0003/Topics/topics2001
-    mv $tfil/TOP-ZH01.TXT $tfil/Top-zh01.txt
+    cp $tfil/TOP-ZH01.TXT $tfil/Top-zh01.txt
 
     tfil=$DIR0003/Topics/topics2002
-    mv $tfil/Top-fi50-02.txt $tfil/Top-fi02.txt
-    mv $tfil/Top-ja02-utf8.txt $tfil/Top-ja02.txt
-    mv $tfil/Top-zh02.unicode $tfil/Top-zh02.txt
+    cp $tfil/Top-fi50-02.txt $tfil/Top-fi02.txt
+    cp $tfil/Top-ja02-utf8.txt $tfil/Top-ja02.txt
+    cp $tfil/Top-zh02.unicode $tfil/Top-zh02.txt
 
     tfil=$DIR0003/Topics/topics2003
-    mv $tfil/japan/top-ja03-utf8.utf8 $tfil/Top-ja03.txt
-    mv $fil/Top-zh03-utf8.txt $fil/Top-zh03.txt
+    cp $tfil/japan/top-ja03-utf8.utf8 $tfil/Top-ja03.txt
+    cp $fil/Top-zh03-utf8.txt $fil/Top-zh03.txt
+
+    # mv 2004 English and Russian queries
+    mkdir -p $DIR0003/Topics/topics2004
+    cp $DIR0304/Top-en04.txt $DIR0003/Topics/topics2004/Top-en04.txt
+    cp $DIR0304/Top-ru04.txt $DIR0003/Topics/topics2004/Top-ru04.txt
+
 
 #    The python script src/docparser.py extracts queries and constructs 2 versions:
 #    Extract query from sgml file into single line, same as MATERIAL
@@ -138,14 +147,17 @@ if [ $sstage -le 0 ] && [ $estage -ge 0 ]; then
     
     if [ $query_english_only -eq 1 ]; then
       Q_eng=$QUERIES/QUERY_english
-      rm_mk $Q_eng
-      for yr in 00 01 02 03; do #2000 is broken
+      if [ $reset -eq 1 ]; then
+        rm_mk $Q_eng
+      fi
+
+      for yr in 00 01 02 03 04; do #2000 is broken
         fil=$QUERIES/topics20${yr}/Top-en${yr}.txt
         conv_encoding $fil
         python src/docparser.py query $fil $Q_eng $yr
       done
-      cat $Q_eng/query{00,01,02,03}_title.txt > $Q_eng/query_title.txt
-      cat $Q_eng/query{00,01,02,03}_all.txt > $Q_eng/query_all.txt
+      cat $Q_eng/query{00,01,02,03,04}_title.txt > $Q_eng/query_title.txt
+      cat $Q_eng/query{00,01,02,03,04}_all.txt > $Q_eng/query_all.txt
     else
 
       #######################################################
@@ -154,12 +166,12 @@ if [ $sstage -le 0 ] && [ $estage -ge 0 ]; then
       for lang in "${!Q[@]}"; do
         Q_lang = $QUERIES/QUERY_${lang}
         rm_mk $Q_lang
-        for yr in 00 01 02 03; do #2000 is broken
+        for yr in 00 01 02 03 04; do #2000 is broken
           fil=$QUERIES/topics20${yr}/${Q[$lang]}$yr.txt
           conv_encoding $fil
           python src/docparser.py query $fil $Q_lang $yr
         done
-        cat $Q_lang/query{00,01,02,03}_title.txt > $Q_lang/query_title.txt
+        cat $Q_lang/query{00,01,02,03,04}_title.txt > $Q_lang/query_title.txt
       done
     fi
   fi
@@ -167,13 +179,15 @@ if [ $sstage -le 0 ] && [ $estage -ge 0 ]; then
     #######################################################
     # Extract relevance assessments
     #######################################################
-  if [[ "${processd[@]}" =~ "rel" ]]; then
+  if [[ "${processd[@]}" =~ "rels" ]]; then
 #    [ -d $DIR0003/RelAssess ] && rm -r $DIR0003/RelAssess
 #    cp -r $DIR0003_org/RelAssess $DIR0003
 
     # renaming stuff
+    mkdir -p $RELS/2004rels
     mv $RELS/2000rels/biling_qrels $RELS/2000rels/qrels_english
     mv $RELS/2001rels/qrels_bilingual $RELS/2001rels/qrels_english
+    mv $DIR0304/qrels_ru_2004 $RELS/2004rels/qrels_russian
 
     for lang in "${!L[@]}"; do
       mv $RELS/2000rels/${lang}_qrels $RELS/2000rels/qrels_${lang}
@@ -193,7 +207,7 @@ if [ $sstage -le 0 ] && [ $estage -ge 0 ]; then
       [[ -f $relf ]] && rm $relf
 
       mkdir -p $RELS/all_yrs
-      cat $RELS/{2000,2001,2002,2003}rels/qrels_${lang} > $relf
+      cat $RELS/{2000,2001,2002,2003,2004}rels/qrels_${lang} > $relf
       # Keep only the rel mappings "1" in 4th column
       awk '{ if ($4==1) {print }}' $relf > $relf.temp
 
@@ -267,7 +281,8 @@ if [ $sstage -le 0 ] && [ $estage -ge 0 ]; then
     # The new documents will be in {name}_txt_en
 
     for lang in "${!L[@]}"; do
-      fild=${L[$lang]}/fr_rundschau_txt1
+      fild=${L[$lang]}/der_spiegel_txt
+      mkdir -p ${fild}_en
       #fild=${L[$lang]}/all_docs
       #fild=${L[$lang]}/xml_txt
       #rm_mk ${fild}_en.tmp
@@ -293,17 +308,17 @@ if [ $sstage -le 1 ] && [ $estage -ge 1 ]; then
   for lang in "${!L[@]}"; do
     # copy translated into all_docs_en
     # copy original language into all_docs
+    echo "Removing and Copying $subdir to all_docs_en.. this could take a while."
     rm_mk ${L[$lang]}/all_docs_en
     for subdir in `ls -d ${L[$lang]}/*_txt_en`; do
-      echo "Copying $subdir to all_docs_en.."
       cp -l $subdir/* ${L[$lang]}/all_docs_en
     done
 
-    rm_mk ${L[$lang]}/all_docs_src
-    for subdir in `ls -d ${L[$lang]}/*_txt`; do
-      echo "Copying $subdir to all_docs_src.."
-      cp -l $subdir/* ${L[$lang]}/all_docs_src
-    done
+    #echo "Removing and copying $subdir to all_docs_src.. this could take a while."
+    #rm_mk ${L[$lang]}/all_docs_src
+    #for subdir in `ls -d ${L[$lang]}/*_txt`; do
+    #  cp -l $subdir/* ${L[$lang]}/all_docs_src
+    #done
 
     echo "Merging relf, docids, qids"
     relf=$RELS/all_yrs/qrels_${lang}.txt
@@ -420,8 +435,8 @@ if [ $sstage -le 4 ] && [ $estage -ge 4 ]; then
       QUERYF=$QUERIES/QUERY_english/query_${qtype}_${lang}.txt.tm
 #      for k in 10 20; do
       #for k in 10 20 50 100 200 300 400; do
-      for k in 20; do
-        #bash ./bin/runPolyTM.sh train $BITEXTD $lang $k
+      for k in 20 50 100 200; do
+        bash ./bin/runPolyTM.sh train $BITEXTD $lang $k
         bash ./bin/runPolyTM.sh infer $BITEXTD $lang $k $TESTD $QUERYF $qtype
       done
     done
@@ -435,8 +450,6 @@ if [ $sstage -le 5 ] && [ $estage -ge 5 ]; then
   #######################################################
   for lang in "${!L[@]}"; do
     printf "\n$lang - STAGE5: test topic model:\n"
-#    for k in 10 20 50 100 200 300 400 500; do
-    #for k in 600 700; do
     mkdir -p results/CLEF/$lang
 
     if [ $baseline -eq 1 ]; then
@@ -445,9 +458,13 @@ if [ $sstage -le 5 ] && [ $estage -ge 5 ]; then
       suffix=""
     fi
 
-    for k in 10 20 50 100 200; do # take the best TM
-    #for k in 20; do # take the best TM
-      for qtype in title all; do
+    for qtype in title all; do
+      writef=results/CLEF/$lang/tm.$qtype.map
+      [[ -f $writef ]] && rm $writef
+      echo "lang\tmodel\ttopics\tscore\n" > $writef
+
+      for k in 20 50 100 200; do # take the best TM
+      #for k in 20; do # take the best TM
 
         qfn=malletfiles/$lang/query_$qtype.$k
         tfn=malletfiles/$lang/SrcTopics.$k
@@ -455,16 +472,15 @@ if [ $sstage -le 5 ] && [ $estage -ge 5 ]; then
         relf=$RELS/all_yrs/qrels_${lang}.txt
 
         resf=results/CLEF/$lang/tm.$qtype.ranking.$k
-        writef=results/CLEF/$lang/tm.$qtype.map
 
         [[ ! -f $qfn ]] && echo "$qfn does not exist, run infererence from stage4" && exit 1
         [[ ! -f $tfn ]] && echo "$tfn does not exist, run infererence from stage4" && exit 1
         [[ ! -f $relf ]] && echo "$relf does not exist, run stage0-1" && exit 1
-        echo "Stage 5: Testing topic model retrieval $lang ${k} topics"
+        echo "Stage 5: Testing topic model retrieval $lang ${k} topics with query ${qtype}"
         python src/main.py --mode tm --dims $k \
                           --query_fn $qfn --target_fn $tfn --resf $resf
 
-        trec_map "$relf" "$resf" "$k" "${writef}${suffix}" "$lang" "tm" 
+        trec_map "$relf" "$resf" "$k" "${writef}${suffix}" "$lang" "tm-${qtype}" 
       done
     done
   done
@@ -477,16 +493,21 @@ if [ $sstage -le 6 ] && [ $estage -ge 6 ]; then
   #######################################################
   for lang in "${!L[@]}"; do
     for qtype in title all; do
+
+      writef=results/CLEF/$lang/bm25.$qtype.map
+      [[ -f $writef ]] && rm $writef
+      echo "lang\tmodel\ttopics\tscore\n" > $writef
+
+
       qfn=$QUERIES/QUERY_english/query_${qtype}_${lang}.txt.bm25
       tfn=${L[$lang]}/all_docs_en_bm25
       relf=$RELS/all_yrs/qrels_${lang}.txt
       resf=results/CLEF/$lang/bm25.${qtype}.ranking
-      writef=results/CLEF/$lang/bm25.$qtype.map
 
       python src/main.py --mode doc --dims 0 \
                         --query_fn $qfn --target_fn $tfn --resf $resf
 
-      trec_map "$relf" "$resf" "00" "$writef" "$lang" "doc" 
+      trec_map "$relf" "$resf" "00" "$writef" "$lang" "doc-${qtype}" 
     done
   done 
 fi # End stage 6
@@ -500,6 +521,9 @@ if [ $sstage -le 7 ] && [ $estage -ge 7 ]; then
     relf=$RELS/all_yrs/qrels_${lang}.txt
     for qtype in all title; do
       outf=results/CLEF/${lang}/combine.$qtype
+
+      [[ -f $outf.map ]] && rm $outf.map && rm $outf.ranking && $outf.ranking.tmp
+      echo "lang\tmodel\ttopics\tscore\n" > $outf.map
 
       maxk=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k}' results/CLEF/$lang/tm.$qtype.map`
       echo "querytype:$qtype, max topic:$maxk" 
@@ -522,3 +546,7 @@ if [ $sstage -le 7 ] && [ $estage -ge 7 ]; then
     done
   done
 fi # End Stage 7
+
+
+
+

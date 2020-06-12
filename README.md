@@ -11,12 +11,15 @@
 
 #### Corpus Statistics
 see stats.txt, generated from stage 0:1
+Note the number of lines in docs for non-MATERIAL datasets do not need to match up because it
+is not a line by line translation. 
 
 #### Preparing bitext
 For MATERIAL, Bitext comes with the MATERIAL Directories
 
 For CLEF, TREC, Bitext is obtained from News-Commentary (WMT19)
 http://data.statmt.org/news-commentary/v14/
+
 `bash ./bin/prep_bitext.sh`
 
 # Todo: Instructions on how to get parallel corpora
@@ -29,19 +32,27 @@ Process Documents for: Bitext, ANALYSIS, MT1, MT2, Query
 
 * Stage 0: Make Directories and Prepare Data
 
-* Stage 1: Calculate Statistics
+* Stage 1: Merge Queries, RelAssess, Docs
 
-* Stage 2: Preprocessing for Documents
+* Stage 2: Calculate statistics
 
-* Stage 3: Train Polylingual Topic Model on BiText (up to k topics)
+* Stage 3: Preprocessing Query and Document
 
-* Stage 4: Index Src Topic Vectors, search with Query Topic Vectors (up to k topics) -> trec_eval
+* Stage 4: Train Polylingual Topic Models on BiText
 
-* Stage 5: Index {human, mt1, mt2} documents, search with bm25 query -> trec_eval
+* Stage 5: Test Topic Models
+
+* Stage 6: Index and Retrieve Docs
+
+* Stage 7: Combine Doc Retrieval and TM models
 
 #### Running Query-Topic Diagnostics:
 `bash ./bin/run_diagnostics.sh`
 
-#### Prepare CLEF data
-Preparation of CLEF data goes through several stages before it is ready for the Pipeline0:
+#### After Stage 7, Generate report (TREC/CLEF)
 
+`bash report.sh {dataset} {lang}`
+
+e.g.,
+
+`bash report.sh TREC chinese`

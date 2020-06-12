@@ -1,0 +1,31 @@
+
+russian - STAGE2: Calculating Statistics
+=== Queries === /home/hltcoe/ssia/clef00-03/Topics/QUERY_english/query_all_russian.txt
+	no. of unique russian queryIDs: 61, unique text: 61 
+	average no. of words: 46.2787
+
+=== Queries === /home/hltcoe/ssia/clef00-03/Topics/QUERY_english/query_title_russian.txt
+	no. of unique russian queryIDs: 61, unique text: 61 
+	average no. of words: 3.34426
+
+=== Docs ===
+from: /home/hltcoe/ssia/clef00-03/DocumentData/DataCollections/Russian_data/all_docs_en
+	num lines: 286778
+	avg nwords per line: 18.0498 
+	avg num lines per doc: 30.7933
+	num docs: 9313
+	avg nwords per doc: 555.812 
+
+=== Docs ===
+from: /home/hltcoe/ssia/clef00-03/DocumentData/DataCollections/Russian_data/all_docs_src
+	num lines: 539953
+	avg nwords per line: 7.79591 
+	avg num lines per doc: 57.9784
+	num docs: 9313
+	avg nwords per doc: 451.995 
+
+=== rel ===
+	num of unique queries: 61
+	num of unique docs: 212
+	avg num of docs per query: 3.54098
+	avg num of query per doc: 1.01887

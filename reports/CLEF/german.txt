@@ -1,0 +1,17 @@
+
+  ### Dataset:CLEF Lang:german
+  
+  #### Indiv Systems
+  | System | QueryType |  MAP   |
+  |--------|-----------|--------|
+  | tm | title | 0.0152 |
+  | tm | all | 0.0292 |
+  | bm25 | title | 0.3130 |
+  | bm25 | all | 0.4216 |
+
+  #### Combined Systems
+  | System | QueryType | IntpWeight |  MAP   |
+  |--------|-----------|------------|--------|
+  | combined | title | 0.55 | 0.3194 |
+  | combined | all | 0.30 | 0.4262 |
+  

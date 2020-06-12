@@ -1,0 +1,31 @@
+
+chinese - STAGE2: Calculating Statistics
+=== Queries === /home/hltcoe/ssia/trec/Topics/QUERY_english/query_all_chinese.txt
+	no. of unique chinese queryIDs: 60, unique text: 60 
+	average no. of words: 61.9167
+
+=== Queries === /home/hltcoe/ssia/trec/Topics/QUERY_english/query_title_chinese.txt
+	no. of unique chinese queryIDs: 60, unique text: 60 
+	average no. of words: 6.18333
+
+=== Docs ===
+from: /home/hltcoe/ssia/trec/chinese/all_docs_en
+	num lines: 381018
+	avg nwords per line: 14.4721 
+	avg num lines per doc: 16.8734
+	num docs: 22581
+	avg nwords per doc: 244.194 
+
+=== Docs ===
+from: /home/hltcoe/ssia/trec/chinese/all_docs_src
+	num lines: 22581
+	avg nwords per line: 9.90213 
+	avg num lines per doc: 1
+	num docs: 22581
+	avg nwords per doc: 9.90213 
+
+=== rel ===
+	num of unique queries: 60
+	num of unique docs: 506
+	avg num of docs per query: 8.75
+	avg num of query per doc: 1.03755

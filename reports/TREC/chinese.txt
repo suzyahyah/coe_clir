@@ -1,0 +1,17 @@
+
+  ### Dataset:TREC Lang:chinese
+  
+  #### Indiv Systems
+  | System | QueryType |  MAP   |
+  |--------|-----------|--------|
+  | tm | title | 0.0343 |
+  | tm | all | 0.0601 |
+  | bm25 | title | 0.1965 |
+  | bm25 | all | 0.2463 |
+
+  #### Combined Systems
+  | System | QueryType | IntpWeight |  MAP   |
+  |--------|-----------|------------|--------|
+  | combined | title | 0.25 | 0.2076 |
+  | combined | all | 0.15 | 0.2502 |
+  

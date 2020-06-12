@@ -29,6 +29,7 @@ import time
 import pdb
 import nltk
 import re
+import numpy as np
 
 lang = sys.argv[1]
 fild = sys.argv[2]
@@ -62,7 +63,7 @@ print("Total number of files:", len(fns))
 for i, fn in enumerate(fns):
 
     if i%10==0:
-        print(f"{i} files processed, time elapsed:{time.time()-start}")
+        print(f"{i} files processed, time elapsed:{np.around(time.time()-start},5)")
 
     with open(os.path.join(fild, fn), 'r') as f:
         data = f.readlines()

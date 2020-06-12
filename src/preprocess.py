@@ -82,6 +82,22 @@ if __name__=="__main__":
 
     print(f"\nPreprocessing for : {args.fn} {args.docdir}, {args.mode}")
 
+    if args.mode == "tokenize":
+        import jieba
+        files = os.listdir(args.docdir)
+        pdb.set_trace()
+        new_dir = args.docdir+".temp"
+        print("tokenizing chinese.")
+        for fil in files:
+            with open(os.path.join(args.docdir,fil), 'r') as f:
+                data = f.readlines()
+                data = [jieba.cut_for_search(d) for d in data]
+                data = [' '.join(d) for d in data]
+                with open(os.path.join(new_dir, fil), 'w') as f:
+                    f.write("\n".join(data)+"\n")
+        print("written to:", new_dir)
+
+
     if args.mode == "tm":
         pipe.load_stopwords(args.sw)
 

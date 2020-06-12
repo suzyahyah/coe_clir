@@ -69,8 +69,13 @@ def extract_queries(sgml_file, write_dir, year="", dformat=""):
         queries_all.append(qid+"\t"+alltext)
         queries_title.append(qid+"\t"+title)
 
+
     q_allfp = os.path.join(write_dir, f'query{year}_all.txt')
     q_titlefp = os.path.join(write_dir, f'query{year}_title.txt')
+
+    print(f"{len(queries_all)} queries written to {q_allfp}")
+    print(f"{len(queries_title)} queries written to {q_titlefp}")
+
 
     queries_all = "\n".join(queries_all)
     with open(q_allfp, 'w') as f:
@@ -79,9 +84,6 @@ def extract_queries(sgml_file, write_dir, year="", dformat=""):
     queries_title = "\n".join(queries_title)
     with open(q_titlefp, 'w') as f:
         f.write(queries_title + "\n")
- 
-    print(f"{len(queries_all)} queries written to {q_allfp}")
-    print(f"{len(queries_title)} queries written to {q_titlefp}")
 
 def parse_write_sgml(sgml_file, write_dir):
     """Method used to parse sgml files
@@ -139,7 +141,7 @@ def parse_write_sgml(sgml_file, write_dir):
             if len(texts) == 0:
                 texts = doc.find_all(fmt['text3'])
         if len(texts)==0:
-            print("Warning: no text found in ", sgml_file)
+            print(f"Warning: no text found in {sgml_file}:{docno}")
 
 
         #for text in texts:
@@ -173,6 +175,7 @@ if __name__=="__main__":
     elif mode == "query":
         if len(sys.argv)==5:
             year = str(sys.argv[4])
+
             extract_queries(fil, write_dir, year)
         else:
             # trec format

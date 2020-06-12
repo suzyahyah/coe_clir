@@ -63,6 +63,12 @@ def init():
     doc_new = merge_df[['docid', 'docid_sfx']].drop_duplicates()
     rel_new = merge_df[['qid', 'docid']].drop_duplicates()
 
+    if len(q_new)==0:
+        sys.exit("0 queries - something went wrong in merge")
+    elif len(rel_new) == 0:
+        sys.exit("0 rels - something weng wrong in merge")
+
+
     # write to file
     # clean up names
     relfn = rel_f[:rel_f.find('.')] + ".txt"

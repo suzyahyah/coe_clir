@@ -49,7 +49,7 @@ function doc_stats() {
 
     nw=$(cat $1/* | wc -w)
     nlines=$(cat $1/* | wc -l)
-    ndocs=$(ls $1/* | wc -l)
+    ndocs=$(ls -A $1 | wc -l)
 
     avg_nw_doc=$(awk "BEGIN{print $nw/$ndocs}")
     #src_avg_nw_doc=$(awk "BEGIN{print $src_nw/$ndocs}")

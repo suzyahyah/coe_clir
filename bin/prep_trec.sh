@@ -14,14 +14,14 @@ source ./bin/utils.sh
 # Stage 6: Index and Retrieve Docs
 # Stage 7: Combine Doc Retrieval and TM models
 
-sstage=6
-estage=7
+sstage=2
+estage=2
 translate=0
 reset=0 # copies all directories
 baseline=0
 query_english_only=1
 
-processd=(doc)
+processd=(doc query rel bitext)
 
 # Original DaGta Directory
 TRECDIR_org=/home/hltcoe/kduh/data/ir/trec/

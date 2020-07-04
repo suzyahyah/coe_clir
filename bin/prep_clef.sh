@@ -14,14 +14,14 @@ source ./bin/utils.sh
 # Stage 6: Index and Retrieve Docs
 # Stage 7: Combine Doc Retrieval and TM models
 
-sstage=7 #start stage
-estage=7 #end stage
+sstage=2 #start stage
+estage=2 #end stage
 translate=0
 reset=0 # if 1, remove and copy all directories. We rarely want to do this.
 baseline=0
 query_english_only=1 # if 0, extracts other language queries.
 
-processd=(doc)
+processd=(bitext)
 
 # Original Data Directory
 DIR0003_org=/home/hltcoe/kduh/data/ir/clef00-03
@@ -60,7 +60,7 @@ declare -A L=(
 #['english']=${DOCS}/English_data
 #['finnish']=${DOCS}/Finnish_data
 #['french']=${DOCS}/French_data
-['german']=${DOCS}/German_data
+['russian']=${DOCS}/German_data
 #['italian']=${DOCS}/Italian_data
 #['russian']=${DOCS}/Russian_data
 #['spanish']=${DOCS}/Spanish_data

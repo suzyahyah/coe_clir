@@ -1,26 +1,32 @@
+topic_map(){
+  map_f=$1
+  val=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print max" ("k")"}' $map_f`
+  echo $val
+}
+
+combine_w(){
+  map_f=$1
+  val=`awk -v max=0 '{if($3>max){max=$3;k=$2}}END{print max" ("k")"}' $map_f`
+  echo $val
+}
+
 function gen_report(){
 
   dataset=$1
   lang=$2
   system1=tm
-  system2=bm25
+  system2=mt2
   qtype1=title
   qtype2=all
 
-  map11=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/tm.title.map  | awk '{print $2}'` 
-  map12=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/tm.all.map  | awk '{print $2}'`
-  k1=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/tm.title.map  | awk '{print $1}'`
-  k2=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/tm.all.map  | awk '{print $2}'`
- 
-  map21=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/bm25.title.map  | awk '{print $2}'`
-  map22=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/bm25.all.map  | awk '{print $2}'` 
+  map11=`topic_map results/$dataset/$lang/$system1.title.map`
+  map12=`topic_map results/$dataset/$lang/$system1.all.map`
 
-  wmap1=`awk -v max=0 '{if($3>max){max=$3;k=$2}}END{print k" "max}' results/$dataset/$lang/combine.title.map | awk '{print $2}'`
-  weight1=`awk -v max=0 '{if($3>max){max=$3;k=$2}}END{print k" "max}' results/$dataset/$lang/combine.title.map | awk '{print $1}'`
+  map21=`topic_map results/$dataset/$lang/$system2.title.map`
+  map22=`topic_map results/$dataset/$lang/$system2.all.map`
 
-  wmap2=`awk -v max=0 '{if($3>max){max=$3;k=$2}}END{print k" "max}' results/$dataset/$lang/combine.all.map | awk '{print $2}'`
-  weight2=`awk -v max=0 '{if($3>max){max=$3;k=$2}}END{print k" "max}' results/$dataset/$lang/combine.all.map | awk '{print $1}'`
-  
+  wmap1=`combine_w results/$dataset/$lang/combine.title.map`
+  wmap2=`combine_w results/$dataset/$lang/combine.all.map`
 
   report="""
   ### Dataset:$dataset Lang:$lang
@@ -34,10 +40,10 @@ function gen_report(){
   | $system2 | $qtype2 | $map22 |
 
   #### Combined Systems
-  | System | QueryType | IntpWeight |  MAP   |
-  |--------|-----------|------------|--------|
-  | combined | $qtype1 | $weight1 | $wmap1 |
-  | combined | $qtype2 | $weight2 | $wmap2 |
+  | System | QueryType |  MAP   |
+  |--------|-----------|--------|
+  | combined | $qtype1 |  $wmap1 |
+  | combined | $qtype2 |  $wmap2 |
   """
   mkdir -p reports/$dataset
   printf "$report" > reports/$dataset/$lang.txt

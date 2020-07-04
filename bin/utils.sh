@@ -132,14 +132,50 @@ trec_map() {
 }
 
 function index_query_doc() {
-    printf "\n$1 - STAGE5: Index and Query $2 Trans Docs:\n"
-    python src/main.py --lang $1 --mode doc --system $2 --dims 0
+    printf "\n - STAGE5: Index and Query \n"
 
-    score=$(./trec_eval/trec_eval -m map data/IRrels_$1/rels.txt.trec \
-      results/ranking_$1.txt.$2 | awk '{print $3}') || exit 1
-    printf "$1\t$2\t00\t$score\n" >> results/all.txt
+    qfn=$1
+    tfn=$2
+    relf=$3
+    resf=$4
+    writef=$5
+    echo "query:" $qfn
+    echo "target" $tfn
+    echo "rel f:" $relf
+    python src/main.py --query_fn $qfn --mode doc --resf $resf --target_fn $tfn --dims 0
+    
+    trec_map "$relf" "$resf" "00" "$writef" "$lang" "doc"
 
-    ./trec_eval/trec_eval -q data/IRrels_$1/rels.txt.trec \
-      results/ranking_$1.txt.$2 | grep "map\s*query\s*" | awk '{print $2" "$3}' > results/each_map_$1.$2
-    printf "Result written to: results/each_map_$1.$2\n"
+}
+
+function combine_model_sweep(){
+  
+  relf=$1
+  outf=$2
+  tmmap=$3
+  tmrank=$4
+  docrank=$5
+
+  echo "Combining models for $lang..."
+
+  [[ -f $outf.map ]] && rm $outf.map && rm $outf.ranking && $outf.ranking.tmp
+  echo "lang\tmodel\ttopics\tscore\n" > $outf.map
+
+  maxk=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k}' $tmmap`
+  echo "querytype:$qtype, max topic:$maxk" 
+
+  #tmrank=$tmrank.$maxk
+
+  echo "Searching over interpolation weights:"
+  # (1-w) score1 + w *score2
+  for w in `seq 0 0.05 1`; do 
+  #for w in 0.05; do 
+    python src/combine_models.py $w $tmrank.$maxk $docrank $outf.ranking
+    printf "$w "
+    ./trec_eval/trec_eval -m map ${relf}.trec $outf.ranking > $outf.ranking.tmp
+    awk -v k=$maxk -v w=$w '{print k" "w" "$3}' $outf.ranking.tmp >> $outf.map
+  done
+  echo "Written to: $outf.map" 
+  maxw=`awk -v max=0 '{if($3>max){max=$3;k=$2}}END{print k" "max}' $outf.map`
+  echo "querytype: $qtype, best interpolation weight, map score: $maxw"
 }

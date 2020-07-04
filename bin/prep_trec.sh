@@ -333,7 +333,6 @@ if [ $sstage -le 5 ] && [ $estage -ge 5 ]; then
       suffix=""
     fi
 
-
     for qtype in title all; do
 
       writef=results/TREC/$lang/tm.$qtype.map
@@ -397,8 +396,6 @@ if [ $sstage -le 7 ] && [ $estage -ge 7 ]; then
       outf=results/TREC/${lang}/combine.$qtype
       [[ -f $outf.map ]] && rm $outf.map && rm $outf.ranking && $outf.ranking.tmp
       echo "lang\tmodel\ttopics\tscore\n" > $outf
-
-
 
 
       maxk=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k}' results/TREC/$lang/tm.$qtype.map`

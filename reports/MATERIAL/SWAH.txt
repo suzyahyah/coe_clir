@@ -1,0 +1,17 @@
+
+  ### Dataset:MATERIAL Lang:SWAH
+  
+  #### Indiv Systems
+  | System | QueryType |  MAP   |
+  |--------|-----------|--------|
+  | tm | title | 0.0672 (100) |
+  | tm | all |  |
+  | mt1 | title | 0.3199 (00) |
+  | mt1 | all |  |
+
+  #### Combined Systems
+  | System | QueryType |  MAP   |
+  |--------|-----------|--------|
+  | combined | title |  0 () |
+  | combined | all |   |
+  

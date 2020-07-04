@@ -1,0 +1,17 @@
+
+  ### Dataset: Lang:
+  
+  #### Indiv Systems
+  | System | QueryType |  MAP   |
+  |--------|-----------|--------|
+  | tm | title |  |
+  | tm | all |  |
+  | doc | title |  |
+  | doc | all |  |
+
+  #### Combined Systems
+  | System | QueryType |  MAP   |
+  |--------|-----------|--------|
+  | combined | title |   |
+  | combined | all |   |
+  

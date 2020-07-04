@@ -1,5 +1,8 @@
 malletfiles/*
+malletfiles_backup/*
 results/*
+data_backup/*
+./trec_eval/*
 data/*
 src/*.swp
 bin/*.swp

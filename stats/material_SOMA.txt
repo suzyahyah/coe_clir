@@ -1,0 +1,36 @@
+
+SOMA - STAGE1: Calculating Statistics:
+
+=== Queries === /home/ssia/projects/coe_clir/data/QUERY_SOMA/q.txt
+	no. of unique SOMA queryIDs: 697, unique text: 689 
+	average no. of words: 1.5495
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SOMA/build-bitext/eng
+	num lines: 24844
+	avg nwords per line: 30.5426 
+	avg num lines per doc: 1.22577
+	num docs: 20268
+	avg nwords per doc: 37.4383 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SOMA/ANALYSIS/mt1_eng
+	num lines: 5691
+	avg nwords per line: 35.0873 
+	avg num lines per doc: 10.1807
+	num docs: 559
+	avg nwords per doc: 357.213 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SOMA/ANALYSIS/mt2_eng
+	num lines: 6690
+	avg nwords per line: 26.6695 
+	avg num lines per doc: 11.9678
+	num docs: 559
+	avg nwords per doc: 319.175 
+
+=== rel ===
+	num of unique queries: 697
+	num of unique docs: 378
+	avg num of docs per query: 2.42755
+	avg num of query per doc: 4.47619

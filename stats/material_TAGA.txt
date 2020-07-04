@@ -1,0 +1,36 @@
+
+TAGA - STAGE1: Calculating Statistics:
+
+=== Queries === /home/ssia/projects/coe_clir/data/QUERY_TAGA/q.txt
+	no. of unique TAGA queryIDs: 483, unique text: 481 
+	average no. of words: 1.82609
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_TAGA/build-bitext/eng
+	num lines: 51704
+	avg nwords per line: 15.6751 
+	avg num lines per doc: 2.2143
+	num docs: 23350
+	avg nwords per doc: 34.7094 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_TAGA/ANALYSIS/mt1_eng
+	num lines: 7344
+	avg nwords per line: 36.2059 
+	avg num lines per doc: 13.8828
+	num docs: 529
+	avg nwords per doc: 502.639 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_TAGA/ANALYSIS/mt2_eng
+	num lines: 12211
+	avg nwords per line: 18.4441 
+	avg num lines per doc: 23.0832
+	num docs: 529
+	avg nwords per doc: 425.749 
+
+=== rel ===
+	num of unique queries: 483
+	num of unique docs: 377
+	avg num of docs per query: 2.31263
+	avg num of query per doc: 2.96286

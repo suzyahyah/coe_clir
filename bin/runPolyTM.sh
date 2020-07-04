@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Author: Suzanna Sia
 
-#MALLETDIR=/home/ssia/packages/Mallet
-MALLETDIR=Mallet
+MALLETDIR=/home/ssia/packages/Mallet
+#MALLETDIR=Mallet
 SAVEDIR=malletfiles
 
 BITEXTDIR=$2
@@ -12,7 +12,9 @@ TESTDIR=$5
 QUERYF=$6
 QTYPE=$7
 
-[[ ! -d $MALLETDIR ]] && "Install Mallet first" && exit 1
+[[ -d $MALLETDIR/bin ]] || { echo "Install Mallet first or Set Mallet Directory in bin/runPolyTM.sh" && exit 1; }
+#
+
 mkdir -p $SAVEDIR/$LANG
 
 ### Used both during training and inference
@@ -32,7 +34,8 @@ if [[ "$1" == "train" ]]; then
   else
     echo "Training Polylingual Topic Model.. k$NTOPICS"
     $MALLETDIR/bin/mallet import-dir --input $SRC_TrainD --output $SRC_TrainF --keep-sequence
-    $MALLETDIR/bin/mallet import-dir --input $eng_TrainD --output $eng_TrainF --keep-sequence 
+    $MALLETDIR/bin/mallet import-dir --input $eng_TrainD --output $eng_TrainF --keep-sequence
+
     $MALLETDIR/bin/mallet run cc.mallet.topics.PolylingualTopicModel --language-inputs $SRC_TrainF $eng_TrainF --num-topics $NTOPICS --alpha 1.0 --inferencer-filename $Inferencer.k$NTOPICS
   fi
 fi

@@ -9,6 +9,8 @@ function gen_report(){
 
   map11=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/tm.title.map  | awk '{print $2}'` 
   map12=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/tm.all.map  | awk '{print $2}'`
+  k1=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/tm.title.map  | awk '{print $1}'`
+  k2=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/tm.all.map  | awk '{print $2}'`
  
   map21=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/bm25.title.map  | awk '{print $2}'`
   map22=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k" "max}' results/$dataset/$lang/bm25.all.map  | awk '{print $2}'` 

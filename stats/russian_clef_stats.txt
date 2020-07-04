@@ -29,3 +29,12 @@ from: /home/hltcoe/ssia/clef00-03/DocumentData/DataCollections/Russian_data/all_
 	num of unique docs: 212
 	avg num of docs per query: 3.54098
 	avg num of query per doc: 1.01887
+
+russian - STAGE2: Calculating Statistics
+=== Docs ===
+from: /home/hltcoe/ssia/parallel_corpora/split/DOCS_russian/build-bitext/eng
+	num lines: 448132
+	avg nwords per line: 16.0372 
+	avg num lines per doc: 54.0374
+	num docs: 8293
+	avg nwords per doc: 866.606 

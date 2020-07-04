@@ -9,6 +9,14 @@ chinese - STAGE2: Calculating Statistics
 	average no. of words: 6.18333
 
 === Docs ===
+from: /home/hltcoe/ssia/parallel_corpora/split/DOCS_chinese/build-bitext/eng
+	num lines: 534152
+	avg nwords per line: 16.1011 
+	avg num lines per doc: 54.6839
+	num docs: 9768
+	avg nwords per doc: 880.468 
+
+=== Docs ===
 from: /home/hltcoe/ssia/trec/chinese/all_docs_en
 	num lines: 381018
 	avg nwords per line: 14.4721 

@@ -29,3 +29,12 @@ from: /home/hltcoe/ssia/clef00-03/DocumentData/DataCollections/German_data/all_d
 	num of unique docs: 3326
 	avg num of docs per query: 18.8261
 	avg num of query per doc: 1.04149
+
+german - STAGE2: Calculating Statistics
+=== Docs ===
+from: /home/hltcoe/ssia/parallel_corpora/split/DOCS_german/build-bitext/eng
+	num lines: 502132
+	avg nwords per line: 16.0038 
+	avg num lines per doc: 54.2376
+	num docs: 9258
+	avg nwords per doc: 868.006 

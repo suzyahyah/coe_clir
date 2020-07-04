@@ -6,7 +6,7 @@ tgt_dir=/home/ssia/projects/coe_clir/data/mt2
 
 del_mk_cp(){
   
-  tgtdir=/home/ssia/projects/coe_clir/data/DOCS_$2/ANALYSIS/mt2_eng.tmp
+  tgtdir=/home/ssia/projects/coe_clir/data/DOCS_$2/ANALYSIS/mt2_eng
   echo $tgtdir
   echo $2
   [ -d $tgtdir ] && rm -r $tgtdir

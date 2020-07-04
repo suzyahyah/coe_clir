@@ -130,3 +130,16 @@ trec_map() {
   printf "MAP for each Query written to: $writef.each.$ntopics \n"
 
 }
+
+function index_query_doc() {
+    printf "\n$1 - STAGE5: Index and Query $2 Trans Docs:\n"
+    python src/main.py --lang $1 --mode doc --system $2 --dims 0
+
+    score=$(./trec_eval/trec_eval -m map data/IRrels_$1/rels.txt.trec \
+      results/ranking_$1.txt.$2 | awk '{print $3}') || exit 1
+    printf "$1\t$2\t00\t$score\n" >> results/all.txt
+
+    ./trec_eval/trec_eval -q data/IRrels_$1/rels.txt.trec \
+      results/ranking_$1.txt.$2 | grep "map\s*query\s*" | awk '{print $2" "$3}' > results/each_map_$1.$2
+    printf "Result written to: results/each_map_$1.$2\n"
+}

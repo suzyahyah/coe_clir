@@ -4,7 +4,7 @@
 source ./bin/utils.sh
 
 # document types to process for stage0 to stage6.
-processd=(query rel analysis mt1 mt2) 
+processd=(analysis query rel mt1 mt2) 
 baseline=0
 
 # start stage and end stage (inclusive)
@@ -29,15 +29,15 @@ declare -A MT1
 
 # this is correct
 L=(
-#['SWAH']=${DATA_DIR}A
-['TAGA']=${DATA_DIR}B
-#['SOMA']=${DATA_DIR}S
+['SWAH']=${DATA_DIR}A
+#['TAGA']=${DATA_DIR}B
+['SOMA']=${DATA_DIR}S
 )
 
 MT1=(
-#['SWAH']=${DATA_DIR2}A
-['TAGA']=${DATA_DIR2}B
-#['SOMA']=${DATA_DIR2}S
+['SWAH']=${DATA_DIR2}A
+#['TAGA']=${DATA_DIR2}B
+['SOMA']=${DATA_DIR2}S
 )
 
 
@@ -104,7 +104,6 @@ index_query_doc() {
     printf "Result written to: results/each_map_$1.$2\n"
 }
 
-
 # Stage 0: 5 start here.
 for lang in "${!L[@]}"; do
 
@@ -135,28 +134,23 @@ for lang in "${!L[@]}"; do
       printf "Processing analysis docs for $lang..\n"
       cdir=$TEMP_DIR/DOCS_$lang/ANALYSIS
 
-      rm_mk $cdir/translation.tmp
+      rm_mk $cdir/translation
       rm_mk $TEMP_DIR/DOCS_$lang/ANALYSIS/src
       rm_mk $TEMP_DIR/DOCS_$lang/ANALYSIS/human_eng
-      cp ${L[$lang]}/ANALYSIS{1,2}/text/translation/* $cdir/translation.tmp
-    fi
+      cp ${L[$lang]}/ANALYSIS{1,2}/text/translation/* $cdir/translation
 
-    ### Do 3-way join
-    relf=$TEMP_DIR/IRrels_$lang/rels.tsv.tmp
-    queryf=$TEMP_DIR/QUERY_$lang/q.txt.tmp.qp
-    docfold=$TEMP_DIR/DOCS_$lang/ANALYSIS/translation.tmp
-    python src/merge_keys.py "$relf" "$queryf" "$docfold"
-
-    ###
-
-    # Do further processing
-    if [[ "${processd[@]}" =~ "analysis" ]]; then
       echo "extracting translations and src for $lang"
       for fil in `ls $TEMP_DIR/DOCS_$lang/ANALYSIS/translation/*.txt`;
       do 
         extract_translations $fil $TEMP_DIR/DOCS_$lang/ANALYSIS;
       done
+ 
     fi
+    ### Do 3-way join
+    relf=$TEMP_DIR/IRrels_$lang/rels.tsv.tmp
+    queryf=$TEMP_DIR/QUERY_$lang/q.txt.tmp.qp
+    docfold=$TEMP_DIR/DOCS_$lang/ANALYSIS/translation
+    python src/merge_keys.py "$relf" "$queryf" "$docfold"
 
     # MT Output
     mt1dir=$TEMP_DIR/DOCS_$lang/ANALYSIS/mt1_eng
@@ -172,28 +166,16 @@ for lang in "${!L[@]}"; do
       [[ "$lang" == "TAGA" ]] && ttfile=tt20.n;
       [[ "$lang" == "SOMA" ]] && ttfile=tt53.n;
 
-      cp ${MT1[$lang]}/ANALYSIS{1,2}/$ttfile/t_all/m1/* $mt1dir.tmp
-      for fil in $mt1dir.tmp/*; do
+      cp ${MT1[$lang]}/ANALYSIS{1,2}/$ttfile/t_all/m1/* $mt1dir
+      for fil in $mt1dir/*; do
         sed -i '/^$/d' $fil
       done
-
-      python src/merge_keys.py "$relf" "$queryf" "$mt1dir.tmp"
-
-    #  cdir=$TEMP_DIR/DOCS_$lang/ANALYSIS
-    #  relevfil=$TEMP_DIR/IRrels_$lang/rels.tsv.dedup
-    #  bash ./bin/find_match.sh $cdir mt1_eng.tmp mt1_eng $relevfil
     fi
     
+    # MT2  
     if [[ "${processd[@]}" =~ "mt2" ]]; then
       printf "Processing mt2"
       bash ./bin/mt2.sh $lang
-
-      mt2dir=$TEMP_DIR/DOCS_$lang/ANALYSIS/mt2_eng
-      python src/merge_keys.py "$relf" "$queryf" "$mt2dir.tmp"
-
-    #  cdir=$TEMP_DIR/DOCS_$lang/ANALYSIS
-    #  relevfil=$TEMP_DIR/IRrels_$lang/rels.tsv.dedup
-    #  bash ./bin/find_match.sh $cdir mt2_eng.tmp mt2_eng $relevfil
     fi
 
     ### BiText
@@ -236,9 +218,7 @@ for lang in "${!L[@]}"; do
     printf "\n$lang - STAGE1: Calculating Statistics:\n"
 
     ### Queries
-    if [[ "${processd[@]}" =~ "query" ]]; then
-      print_query $TEMP_DIR/QUERY_$lang/q.txt
-    fi
+    [[ "${processd[@]}" =~ "query" ]] && print_query $TEMP_DIR/QUERY_$lang/q.txt
 
     ### BiText
     [[ "${processd[@]}" =~ "bitext" ]] && doc_stats $TEMP_DIR/DOCS_$lang/build-bitext/eng
@@ -285,6 +265,9 @@ for lang in "${!L[@]}"; do
     fi
 
     # Process the Query for Topic Model
+      python src/preprocess.py --mode "tm" --docdir $bitext2 --sw assets/stopwords_$lang.txt
+    fi
+
     if [[ "${processd[@]}" =~ "query" ]]; then
       queryf=$TEMP_DIR/QUERY_$lang/q.txt
       python src/preprocess.py --mode "tm" --fn $queryf --sw assets/stopwords_en.txt 
@@ -315,7 +298,20 @@ for lang in "${!L[@]}"; do
       rm_mk ${mt2dir}_doc
       python src/preprocess.py --mode "doc" --docdir $mt2dir
     fi
-  fi # end of Stage2
+
+    if [[ "${processd[@]}" =~ "analysis" ]]; then
+      # process raw(src) doc for topic modeling
+      analysis_src=$TEMP_DIR/DOCS_$lang/ANALYSIS/src
+      rm_mk "${analysis_src}_tm"
+      python src/preprocess.py --mode "tm" --docdir $analysis_src --sw assets/stopwords_$lang.txt
+
+      # process human english for bm25 document retrieval
+      hudir=$TEMP_DIR/DOCS_$lang/ANALYSIS/human_eng
+      rm_mk ${hudir}_doc
+      python src/preprocess.py --mode "doc" --docdir $hudir
+    fi
+
+  fi # end of stage 2
 
   if [ $sstage -le 3 ] && [ $estage -ge 3 ]; then
     printf "\n$lang - STAGE3: train topic model:\n"
@@ -369,6 +365,4 @@ for lang in "${!L[@]}"; do
       ./trec_eval/trec_eval -m map data/IRrels_$lang/rels.txt.trec results/combine_$lang.txt
     done
   fi
-
-
 done

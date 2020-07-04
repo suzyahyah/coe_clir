@@ -60,14 +60,13 @@ def init():
 
     # extract the queries, docs, and relevance dataframes
     q_new = merge_df[['qid', 'q']].drop_duplicates()
-    doc_new = merge_df[['docid', 'docid_sfx']].drop_duplicates()
+#    doc_new = merge_df[['docid', 'docid_sfx']].drop_duplicates()
     rel_new = merge_df[['qid', 'docid']].drop_duplicates()
 
     if len(q_new)==0:
         sys.exit("0 queries - something went wrong in merge")
     elif len(rel_new) == 0:
         sys.exit("0 rels - something weng wrong in merge")
-
 
     # write to file
     # clean up names
@@ -100,10 +99,6 @@ def init():
 
 
     # save valid docids one level up
-#    docids = list(doc_new['docid'].values)
-#    with open(os.path.join(doc_fold, '..', 'valid_docids'), 'w') as f:
-#        f.write("\n".join(docids))
-#
 
 if __name__ == "__main__":
     init()

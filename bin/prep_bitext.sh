@@ -5,18 +5,28 @@ source ./bin/utils.sh
 
 # This Script prepares bitext which can be used for both CLEF and TREC
 declare -A L
-NEWSC=/home/hltcoe/ssia/parallel_corpora/split
+PARALLELDIR=/home/hltcoe/ssia/parallel_corpora
+NEWSC=$PARALLELDIR/split
 
-sstage=1
-estage=1
+sstage=0
+estage=0
 
 L=(
-#['english']=${NEWSC}/en
+['english']=${NEWSC}/en
 #['french']=${NEWSC}/fr
-['german']=${NEWSC}/de
+#['german']=${NEWSC}/de
 ['russian']=${NEWSC}/ru
-['chinese']=${NEWSC}/zh
+#['chinese']=${NEWSC}/zh
 )
+
+
+if [[ ! -d $PARALLELDIR/split ]]; then
+  printf "Downloading and extracting tar file... (This may take a while)"
+  mkdir -p $PARALLELDIR
+  wget -P $PARALLELDIR http://data.statmt.org/news-commentary/v14/documents.tgz
+  cd $PARALLELDIR
+  tar zxf documents.tgz
+fi
 
 # Find all matching names
 for lang in "${!L[@]}"; do
@@ -34,7 +44,6 @@ for lang in "${!L[@]}"; do
         cp ${L[$lang]}/$fn $NEWSC/DOCS_$lang/build-bitext/src/$fn
       done
       echo "done"
-
     fi
   fi
 

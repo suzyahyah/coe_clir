@@ -12,6 +12,6 @@
   #### Combined Systems
   | System | QueryType |  MAP   |
   |--------|-----------|--------|
-  | combined | title |  0 () |
+  | combined | title |  0.3898 (0.85) |
   | combined | all |   |
   

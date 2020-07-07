@@ -1,12 +1,12 @@
 
 chinese - STAGE2: Calculating Statistics
 === Queries === /home/hltcoe/ssia/trec/Topics/QUERY_english/query_all_chinese.txt
-	no. of unique chinese queryIDs: 60, unique text: 60 
-	average no. of words: 61.9167
+	no. of unique chinese queryIDs: 66, unique text: 66 
+	average no. of words: 62.0455
 
 === Queries === /home/hltcoe/ssia/trec/Topics/QUERY_english/query_title_chinese.txt
-	no. of unique chinese queryIDs: 60, unique text: 60 
-	average no. of words: 6.18333
+	no. of unique chinese queryIDs: 66, unique text: 66 
+	average no. of words: 6.4697
 
 === Docs ===
 from: /home/hltcoe/ssia/parallel_corpora/split/DOCS_chinese/build-bitext/eng
@@ -18,22 +18,22 @@ from: /home/hltcoe/ssia/parallel_corpora/split/DOCS_chinese/build-bitext/eng
 
 === Docs ===
 from: /home/hltcoe/ssia/trec/chinese/all_docs_en
-	num lines: 381018
-	avg nwords per line: 14.4721 
-	avg num lines per doc: 16.8734
-	num docs: 22581
-	avg nwords per doc: 244.194 
+	num lines: 219874
+	avg nwords per line: 17.3295 
+	avg num lines per doc: 5.87553
+	num docs: 37422
+	avg nwords per doc: 101.82 
 
 === Docs ===
 from: /home/hltcoe/ssia/trec/chinese/all_docs_src
-	num lines: 22581
-	avg nwords per line: 9.90213 
-	avg num lines per doc: 1
-	num docs: 22581
-	avg nwords per doc: 9.90213 
+	num lines: 683910
+	avg nwords per line: 0.656127 
+	avg num lines per doc: 18.2756
+	num docs: 37422
+	avg nwords per doc: 11.9911 
 
 === rel ===
-	num of unique queries: 60
-	num of unique docs: 506
-	avg num of docs per query: 8.75
-	avg num of query per doc: 1.03755
+	num of unique queries: 66
+	num of unique docs: 1504
+	avg num of docs per query: 23.5455
+	avg num of query per doc: 1.03324

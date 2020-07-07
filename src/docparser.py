@@ -7,19 +7,11 @@ import pdb
 import os
 import sys
 import re
-### Third Party imports
 from os import path
+
 from collections import defaultdict
 from bs4 import BeautifulSoup as bs
 
-### Local/Custom imports
-
-# Comment out debugger before deployment
-from debugger import Debugger
-DB = Debugger()
-#from distutils.util import str2bool
-#argparser = argparser.ArgumentParser()
-#argparser.add_argument('--x', type=float, default=0)
 
 def extract_queries(sgml_file, write_dir, year="", dformat=""):
     

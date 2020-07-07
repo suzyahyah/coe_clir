@@ -1,28 +1,13 @@
 #!/usr/bin/python3
 # Author: Suzanna Sia
 
-### Standard imports
-#import random
-#import numpy as np
 import pdb
-#import math
 import os
 import sys
 import shutil
-#import argparse
 
 ### Third Party imports
 import pandas as pd
-
-### Local/Custom imports
-
-# Comment out debugger before deployment
-#from debugger import Debugger
-#DB = Debugger()
-
-#from distutils.util import str2bool
-#argparser = argparser.ArgumentParser()
-#argparser.add_argument('--x', type=float, default=0)
 
 """
 Script for merging docids and queryids across three files:
@@ -78,27 +63,6 @@ def init():
 
     print("New queries written to:", qfn)
     print("New relfiles written to:", relfn)
-#
-#    # copy relevant documents over to new folder
-#    #new_folder = doc_fold[:doc_fold.find('.')]
-#
-#    if os.path.isdir(new_folder):
-#        shutil.rmtree(new_folder)
-#        os.mkdir(new_folder)
-#
-#    for fn in doc_new['docid_sfx'].values:
-#        old_fn = os.path.join(doc_fold, fn)
-#        new_fn = os.path.join(new_folder, fn)
-#        shutil.copy(old_fn, new_fn)
-#
-#    # save valid qids
-#    qids = list(q_new['qid'].values)
-#    query_fold = os.path.dirname(query_f)
-#    with open(os.path.join(query_fold, 'valid_qids'), 'w') as f:
-#        f.write("\n".join(qids))
-
-
-    # save valid docids one level up
 
 if __name__ == "__main__":
     init()

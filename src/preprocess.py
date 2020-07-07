@@ -4,18 +4,15 @@
 # Standard imports
 import random
 import numpy as np
-#import pdb
 import math
 import os, sys
 import re
 import shutil
 import pdb
-# argparser
 import argparse
-from sklearn.datasets import fetch_20newsgroups 
 import nltk
 import string
-# Custom imports
+import jieba
 
 class Pipeline():
 
@@ -34,7 +31,6 @@ class Pipeline():
         with open(fpath, 'r', encoding='utf-8') as f:
             self.stopwords = f.readlines()
         self.stopwords = [w.strip() for w in self.stopwords]
-        #self.stopwords = set(line.strip() for line in open(fpath))
 
     def strip_clean(self, text, stopwords=False):
 
@@ -83,9 +79,7 @@ if __name__=="__main__":
     print(f"\nPreprocessing for : {args.fn} {args.docdir}, {args.mode}")
 
     if args.mode == "tokenize":
-        import jieba
         files = os.listdir(args.docdir)
-        pdb.set_trace()
         new_dir = args.docdir+".temp"
         print("tokenizing chinese.")
         for fil in files:
@@ -100,17 +94,8 @@ if __name__=="__main__":
 
     if args.mode == "tm":
         pipe.load_stopwords(args.sw)
-
-   #     dir1 = f'data/DOCS_{args.lang}/build-bitext/eng'
-   #     dir2 = f'data/DOCS_{args.lang}/build-bitext/src'
-   #     dir3 = f'data/DOCS_{args.lang}/ANALYSIS/src'
-
         if args.docdir:
             proc_and_save(args.docdir, stopwords=True, mode=args.mode)
-
-        #pipe.load_stopwords(f'assets/stopwords_{args.lang}.txt')
-        #proc_and_save(dir2, stopwords=True, mode=args.mode)
-        #proc_and_save(dir3, stopwords=True, mode=args.mode)
 
         if args.fn:
             
@@ -128,7 +113,6 @@ if __name__=="__main__":
 
 
     if "bm25" in args.mode:
-        #mode, system = args.mode.split('_')
         if args.fn:
             with open(args.fn, 'r') as f:
                 queries = f.readlines()
@@ -141,8 +125,3 @@ if __name__=="__main__":
 
         elif args.docdir:
             proc_and_save(args.docdir, stopwords=False, mode=args.mode)
-        #dir1 = f'data/DOCS_{args.lang}/ANALYSIS/src'
-        #dir1 = f'data/DOCS_{args.lang}/ANALYSIS/{system}_eng'
-
-        #proc_and_save(dir1, stopwords=False, mode=mode)
-        #proc_and_save(dir2, stopwords=False, mode=mode)

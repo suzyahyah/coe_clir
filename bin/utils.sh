@@ -6,7 +6,6 @@ function rm_mk(){
    mkdir -p $1
 }
 
-
 function print_rel(){
   printf "\n=== rel ===\n"
   mapf=$1
@@ -42,11 +41,6 @@ function doc_stats() {
     printf "\n=== Docs ===\n"
     printf "from: $1\n"
     
-    #eng_nw=$(cat $TEMP_DIR/DOCS_$lang/$1/$2/* | wc -w)
-    #src_nw=$(cat $TEMP_DIR/DOCS_$lang/$1/src/* | wc -w)
-    #nlines=$(cat $TEMP_DIR/DOCS_$lang/$1/$2/* | wc -l)
-    #ndocs=$(ls $TEMP_DIR/DOCS_$lang/$1/$2/* | wc -l)
-
     nw=$(cat $1/* | wc -w)
     nlines=$(cat $1/* | wc -l)
     ndocs=$(ls -A $1 | wc -l)
@@ -62,17 +56,12 @@ function doc_stats() {
       printf "\tavg nwords per line: $avg_nw_lin \n"
       printf "\tavg num lines per doc: $avg_nlines\n"
     fi
-    #src_avg_nw_lin=$(awk "BEGIN{print $src_nw/$nlines}")
 
     printf "\tnum docs: $ndocs\n"
-    #printf "\tavg nwords per line for src: $src_avg_nw_lin \n"
     printf "\tavg nwords per doc: $avg_nw_doc \n"
-    #printf "\tavg nwords per doc for src: $src_avg_nw_doc \n"
 }
 
-
-
-conv_lang() {
+function conv_lang() {
   [[ "$1" == "english" ]] && lang="EN";
   [[ "$1" == "spanish" ]] && lang="ES";
   [[ "$1" == "german" ]] && lang="DE";
@@ -87,7 +76,7 @@ conv_lang() {
   echo "$lang"
 }
 
-conv_encoding() {
+function conv_encoding() {
   # This function checks for the encoding, and converts it to utf-8.
   fil=$1
   encoding=`file -b --mime-encoding $fil`
@@ -164,12 +153,9 @@ function combine_model_sweep(){
   maxk=`awk -v max=0 '{if($4>max){max=$4;k=$3}}END{print k}' $tmmap`
   echo "querytype:$qtype, max topic:$maxk" 
 
-  #tmrank=$tmrank.$maxk
-
   echo "Searching over interpolation weights:"
   # (1-w) score1 + w *score2
   for w in `seq 0 0.05 1`; do 
-  #for w in 0.05; do 
     python src/combine_models.py $w $tmrank.$maxk $docrank $outf.ranking
     printf "$w "
     ./trec_eval/trec_eval -m map ${relf}.trec $outf.ranking > $outf.ranking.tmp

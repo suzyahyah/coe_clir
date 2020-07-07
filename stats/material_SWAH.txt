@@ -1,0 +1,36 @@
+
+SWAH - STAGE1: Calculating Statistics:
+
+=== Queries === /home/ssia/projects/coe_clir/data/QUERY_SWAH/q.txt
+	no. of unique SWAH queryIDs: 595, unique text: 591 
+	average no. of words: 1.75294
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SWAH/build-bitext/eng
+	num lines: 24900
+	avg nwords per line: 32.4478 
+	avg num lines per doc: 1.31607
+	num docs: 18920
+	avg nwords per doc: 42.7034 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SWAH/ANALYSIS/mt1_eng
+	num lines: 7671
+	avg nwords per line: 35.3741 
+	avg num lines per doc: 14.0238
+	num docs: 547
+	avg nwords per doc: 496.079 
+
+=== Docs ===
+from: /home/ssia/projects/coe_clir/data/DOCS_SWAH/ANALYSIS/mt2_eng
+	num lines: 10100
+	avg nwords per line: 25.1353 
+	avg num lines per doc: 18.4644
+	num docs: 547
+	avg nwords per doc: 464.108 
+
+=== rel ===
+	num of unique queries: 595
+	num of unique docs: 363
+	avg num of docs per query: 2.08235
+	avg num of query per doc: 3.41322

@@ -3,12 +3,12 @@
 
 source ./bin/utils.sh
 
-processd=(mt1 mt2 query doc bitext)  #query rel mt1 mt2 bitext) 
 random_topic_vectors=0 # Used as a dumb baseline/sanity check.
 
 # start stage and end stage (inclusive)
-sstage=7
-estage=7
+sstage=2
+estage=2
+processd=(mt1 mt2 query doc bitext rel)  #query rel mt1 mt2 bitext) 
 
 # Stage0: Get Data
 # Stage1: Merge Queries, Rel, Docs
@@ -31,14 +31,14 @@ declare -A MT1
 # this is correct
 L=(
 ['SWAH']=${DATA_DIR}A
-['TAGA']=${DATA_DIR}B
-['SOMA']=${DATA_DIR}S
+#['TAGA']=${DATA_DIR}B
+#['SOMA']=${DATA_DIR}S
 )
 
 MT1=(
-#['SWAH']=${DATA_DIR2}A
-['TAGA']=${DATA_DIR2}B
-['SOMA']=${DATA_DIR2}S
+['SWAH']=${DATA_DIR2}A
+#['TAGA']=${DATA_DIR2}B
+#['SOMA']=${DATA_DIR2}S
 )
 
 

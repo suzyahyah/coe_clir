@@ -4,14 +4,14 @@
   #### Indiv Systems
   | System | QueryType |  MAP   |
   |--------|-----------|--------|
-  | tm | title | 0.0343 |
-  | tm | all | 0.0601 |
-  | bm25 | title | 0.1965 |
-  | bm25 | all | 0.2463 |
+  | tm | title | 0.0230 (50) |
+  | tm | all | 0.0258 (50) |
+  | bm25 | title | 0.1078 (00) |
+  | bm25 | all | 0.1312 (00) |
 
   #### Combined Systems
-  | System | QueryType | IntpWeight |  MAP   |
-  |--------|-----------|------------|--------|
-  | combined | title | 0.25 | 0.2076 |
-  | combined | all | 0.15 | 0.2502 |
+  | System | QueryType |  MAP   |
+  |--------|-----------|--------|
+  | combined | title |  0.1151 (0.35) |
+  | combined | all |  0.1342 (0.15) |
   

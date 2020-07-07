@@ -4,7 +4,7 @@
   #### Indiv Systems
   | System | QueryType |  MAP   |
   |--------|-----------|--------|
-  | tm | title | 0 () |
+  | tm | title | 0.0152 (200) |
   | tm | all | 0.0292 (200) |
   | bm25 | title | 0.3130 (00) |
   | bm25 | all | 0.4216 (00) |

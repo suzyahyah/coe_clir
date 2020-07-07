@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Author: Suzanna Sia
 
-MALLETDIR=/home/ssia/packages/Mallet
-#MALLETDIR=Mallet
+#MALLETDIR=/home/ssia/packages/Mallet
+MALLETDIR=Mallet
 SAVEDIR=malletfiles
 
 BITEXTDIR=$2

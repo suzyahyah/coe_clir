@@ -42,17 +42,3 @@ wget https://raw.githubusercontent.com/stopwords-iso/stopwords-ar/master/stopwor
 pip install fairseq
 conda install libgcc # we need this for fastBPE
 conda install -c anaconda libstdcxx-ng
-
-# get fairseq models
-# wmt 19 de-en
-wget https://dl.fbaipublicfiles.com/fairseq/models/wmt19.de-en.joined-dict.ensemble.tar.gz
-# wmt 19 ru-en
-wget https://dl.fbaipublicfiles.com/fairseq/models/wmt19.ru-en.ensemble.tar.gz
-
-
-# get parallel data 
-PARALLELDIR=/home/hltcoe/ssia/parallel_corpora
-mkdir -p $PARALLELDIR
-wget -P $PARALLELDIR http://data.statmt.org/news-commentary/v14/training/news-commentary-v14.en-ru.tsv.gz
-tar zxvf
-wget http://data.statmt.org/news-commentary/v14/documents.tgz

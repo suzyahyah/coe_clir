@@ -16,6 +16,10 @@ function gen_report(){
   lang=$2
   system1=tm
   system2=bm25
+  # if material need to also do mt1 system. This needs refactoring.
+  if [[ $dataset == "MATERIAL" ]]; then
+    system2=mt2
+  fi
   qtype1=title
   qtype2=all
 

@@ -28,8 +28,8 @@ function print_rel(){
 function print_query(){
   queryf=$1
 
-  ntotalq=$(cat $queryf | sort -u | wc -l)
-  ntotalqtext=$(cat $queryf | awk -F'\t' '{print $2}' | sort -u | wc -l)
+  ntotalq=$(cat $queryf |  wc -l)
+  ntotalqtext=$(cat $queryf | awk -F'\t' '{print $2}' | wc -l)
   avgwords_q=$(cat $queryf | awk -F'\t' '{print $2}' | wc | awk '{print $2/$1}')
 
   printf "\n=== Queries === $1\n"

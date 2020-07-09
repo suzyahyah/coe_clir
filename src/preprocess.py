@@ -12,7 +12,6 @@ import pdb
 import argparse
 import nltk
 import string
-import jieba
 
 class Pipeline():
 
@@ -79,6 +78,8 @@ if __name__=="__main__":
     print(f"\nPreprocessing for : {args.fn} {args.docdir}, {args.mode}")
 
     if args.mode == "tokenize":
+
+        import jieba
         files = os.listdir(args.docdir)
         new_dir = args.docdir+".temp"
         print("tokenizing chinese.")

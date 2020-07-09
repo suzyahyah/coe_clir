@@ -6,9 +6,10 @@ source ./bin/utils.sh
 random_topic_vectors=0 # Used as a dumb baseline/sanity check.
 
 # start stage and end stage (inclusive)
-sstage=2
-estage=2
-processd=(mt1 mt2 query doc bitext rel)  #query rel mt1 mt2 bitext) 
+sstage=5
+estage=7
+#processd=(mt1 mt2 query doc bitext rel)  #query rel mt1 mt2 bitext) 
+processd=(query mt2 rel)  #query rel mt1 mt2 bitext) 
 
 # Stage0: Get Data
 # Stage1: Merge Queries, Rel, Docs
@@ -31,14 +32,14 @@ declare -A MT1
 # this is correct
 L=(
 ['SWAH']=${DATA_DIR}A
-#['TAGA']=${DATA_DIR}B
-#['SOMA']=${DATA_DIR}S
+['TAGA']=${DATA_DIR}B
+['SOMA']=${DATA_DIR}S
 )
 
 MT1=(
 ['SWAH']=${DATA_DIR2}A
-#['TAGA']=${DATA_DIR2}B
-#['SOMA']=${DATA_DIR2}S
+['TAGA']=${DATA_DIR2}B
+['SOMA']=${DATA_DIR2}S
 )
 
 
@@ -273,7 +274,7 @@ for lang in "${!L[@]}"; do
     qtype=title
     mkdir -p results/MATERIAL/$lang
     writef=results/MATERIAL/$lang/tm.$qtype.map
-    for k in 100; do # take the best TM
+    for k in 20 50 100 200; do # take the best TM
       qfn=malletfiles/$lang/query_$qtype.$k
       tfn=malletfiles/$lang/SrcTopics.$k
       resf=results/MATERIAL/$lang/tm.$qtype.ranking.$k
@@ -291,7 +292,7 @@ for lang in "${!L[@]}"; do
 
   if [ $sstage -le 6 ] && [ $estage -ge 6 ]; then
 
-    qfn=$TEMP_DIR/QUERY_$lang/q.txt.tmp.qp
+    qfn=$TEMP_DIR/QUERY_$lang/q.txt
     relf=$TEMP_DIR/IRrels_$lang/rels.txt
     qtype=title
 
@@ -330,7 +331,7 @@ for lang in "${!L[@]}"; do
     tmmap=results/MATERIAL/$lang/tm.title.map
     tmrank=results/MATERIAL/$lang/tm.title.ranking
 
-    if [[ "${processd[@]}" =~ "docs" ]]; then
+    if [[ "${processd[@]}" =~ "doc" ]]; then
       docrank=results/MATERIAL/$lang/human.title.ranking
       echo "combine for docs.."
       combine_model_sweep $relf $outf $tmmap $tmrank $docrank

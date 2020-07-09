@@ -4,7 +4,7 @@
   #### Indiv Systems
   | System | QueryType |  MAP   |
   |--------|-----------|--------|
-  | tm | title | 0.0725 (100) |
+  | tm | title | 0.0913 (200) |
   | tm | all |  |
   | mt2 | title | 0.3723 (00) |
   | mt2 | all |  |
@@ -12,6 +12,6 @@
   #### Combined Systems
   | System | QueryType |  MAP   |
   |--------|-----------|--------|
-  | combined | title |  0.3898 (0.85) |
+  | combined | title |  0.3862 (0.85) |
   | combined | all |   |
   

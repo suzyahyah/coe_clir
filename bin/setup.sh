@@ -38,6 +38,9 @@ wget https://raw.githubusercontent.com/stopwords-iso/stopwords-zh/master/stopwor
 wget https://raw.githubusercontent.com/stopwords-iso/stopwords-ar/master/stopwords-ar.txt -O \
   assets/stopwords_arabic.txt
 
+# English stopwords 
+wget https://raw.githubusercontent.com/stopwords-iso/stopwords-en/master/raw/stop-words-english1.txt -O assets/stopwords_en2.txt
+
 # install fairseq
 pip install fairseq
 conda install libgcc # we need this for fastBPE

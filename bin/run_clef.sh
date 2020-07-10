@@ -108,7 +108,7 @@ if [ $sstage -le 0 ] && [ $estage -ge 0 ]; then
     #######################################################
     # Extract English Queries only
     #######################################################
-    
+
     if [ $query_english_only -eq 1 ]; then
       Q_eng=$QUERIES/QUERY_english
       mkdir -p $Q_eng
@@ -266,7 +266,7 @@ if [ $sstage -le 1 ] && [ $estage -ge 1 ]; then
     for subdir in `ls -d ${L[$lang]}/*_txt_en`; do
       cp -l $subdir/* ${L[$lang]}/all_docs_en
     done
-
+#
     echo "Removing and copying $subdir to all_docs_src.. this could take a while."
     rm_mk ${L[$lang]}/all_docs_src
     for subdir in `ls -d ${L[$lang]}/*_txt`; do
